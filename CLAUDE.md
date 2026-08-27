@@ -32,6 +32,23 @@ macOS aunque el chord que envía sea distinto.
 3. Toda tecla colocada en una capa tiene etiqueta en `tools/labels.py`.
 4. `keymap.c` compila con `-Wall -Wextra` contra stubs de la API de QMK.
 
+### Entorno de compilación
+
+`make compile` y `make flash` necesitan dos cosas fuera de lo obvio, ambas ya
+resueltas en esta máquina y documentadas en la sección 6 del README:
+
+- **El CLI de QMK tiene que correr sobre Python 3.11.** Los scripts de build de
+  `firmware24` usan `ast.Num`, eliminado en Python 3.12. El síntoma es
+  `Platform not defined` precedido de un `AttributeError` sobre `ast`, que no
+  apunta a la causa.
+- **El `arm-none-eabi-gcc` de Homebrew no sirve**: es el compilador sin newlib,
+  así que no encuentra `stdint.h`. Se usa el prebuilt oficial de Arm en
+  `~/toolchains/`, y el `Makefile` lo antepone al PATH mediante
+  `ARM_TOOLCHAIN`.
+
+Los avisos de `qmk doctor` sobre `avr-gcc`, `avrdude`, `dfu-programmer` y
+`dfu-util` no aplican: el Voyager es ARM.
+
 ## Ficheros generados: no editar a mano
 
 - `ledmap.h` lo genera `tools/gen_ledmap.py` desde las capas de `keymap.c`.

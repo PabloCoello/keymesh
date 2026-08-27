@@ -187,6 +187,49 @@ swap, no la tecla.
 
 ## 6. Compilar y flashear
 
+### Montar el entorno en macOS
+
+Tres avisos que cuestan una tarde si los descubres por tu cuenta.
+
+**El CLI de QMK tiene que correr sobre Python 3.11.** Los scripts de build de
+`firmware24` usan `ast.Num`, que Python eliminó en la 3.12. Con una versión más
+nueva la compilación muere en `Platform not defined` tras un
+`AttributeError: module 'ast' has no attribute 'Num'`, que no dice nada útil.
+
+    brew install python@3.11 hidapi dfu-util
+    pipx install --python /opt/homebrew/opt/python@3.11/bin/python3.11 qmk
+    qmk setup -b firmware24 -y zsa/qmk_firmware
+    pipx inject qmk -r ~/qmk_firmware/requirements.txt
+
+Se instala el CLI con `pipx` y no con `brew install qmk/qmk/qmk` porque la
+fórmula del tap de QMK arrastra `arm-none-eabi-gcc@8` desde `osx-cross/arm`, un
+segundo tap de terceros. `hidapi` lo necesita el módulo `hid` de Python;
+`dfu-util` es lo que flashea el Voyager.
+
+**El `arm-none-eabi-gcc` de Homebrew no sirve.** Es solo el compilador, sin
+newlib, así que no encuentra `stdint.h` y la compilación muere en el primer
+fichero de ChibiOS. En Homebrew no hay newlib por separado. Usa el prebuilt
+oficial de Arm, que sí la trae:
+
+    mkdir -p ~/toolchains && cd ~/toolchains
+    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+    tar -xf arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+
+El `Makefile` lo antepone al PATH si está en esa ruta. La versión va fija a
+propósito: un toolchain distinto produce un binario distinto, y con firmware
+conviene que eso sea una decisión y no un efecto de lo que haya en el disco.
+Para usar otro, descomprímelo al lado y pásalo por variable:
+
+    make compile ARM_TOOLCHAIN=$HOME/toolchains/<otra-version>/bin
+
+Si te quedas con el nuevo, cambia el valor por defecto de `ARM_TOOLCHAIN` en el
+`Makefile` y anota aquí la versión.
+
+**`qmk doctor` se queja de AVR.** Falta `avr-gcc`, `avrdude` y compañía, y lo
+marca como problema grave. El Voyager es ARM (STM32F303): no aplica.
+
+### El bucle de trabajo
+
 Una vez montado QMK, el bucle de trabajo es un comando:
 
     make flash          # verifica, regenera, compila y flashea
@@ -216,10 +259,16 @@ Sobre el fork: `os_detection` está en la rama `firmware24` del fork de ZSA, as�
 que compila contra ella. Si usas QMK mainline tendrás que ajustar
 `TOGGLE_LAYER_COLOR`, `keyboard_config` y `rawhid_state`, que son de ZSA.
 
-Comprobado antes de entregarlo: los cuatro `LAYOUT_voyager` tienen 52 teclas,
-los 42 keycodes personalizados están declarados y resueltos, y el fichero pasa
-`gcc -fsyntax-only -Wall -Wextra` contra stubs de la API de QMK. La compilación
-real con el toolchain de AVR/ARM no la he podido hacer aquí.
+Comprobado: los cuatro `LAYOUT_voyager` tienen 52 teclas, los 42 keycodes
+personalizados están declarados y resueltos, y el fichero pasa
+`gcc -fsyntax-only -Wall -Wextra` contra stubs de la API de QMK.
+
+La compilación real también está hecha, contra la rama `firmware24` del fork de
+ZSA con el toolchain de Arm 13.3.rel1: enlaza sin un solo aviso y produce un
+binario de 54 478 bytes en la revisión en que se escribió esto. Es decir, todos
+los keycodes del keymap existen de verdad en esa rama, no solo en los stubs; el
+tamaño se mueve en cuanto tocas el keymap y no es un valor a defender. Lo que sigue sin verificar es el
+comportamiento en hardware: para eso está el protocolo de la sección 9.
 
 Aviso: en `firmware24` los keycodes `RGB_TOG`, `RGB_MOD`, `RGB_HUI` y compañía
 ya no existen. QMK los renombró a `RM_TOGG`, `RM_NEXT`, `RM_HUEU`, `RM_HUED`,

@@ -17,6 +17,15 @@ CC       ?= cc
 DEST      = $(QMK)/keyboards/$(KB)/keymaps/$(KM)
 SOURCES   = keymap.c config.h rules.mk i18n.h ledmap.h
 
+# El arm-none-eabi-gcc de Homebrew viene sin newlib, asi que no encuentra
+# stdint.h y la compilacion muere en el primer fichero de ChibiOS. Se usa el
+# prebuilt oficial de Arm, que si lo trae. Si esta donde lo deja la instalacion
+# descrita en el README, se antepone al PATH; si no, se usa lo que haya.
+ARM_TOOLCHAIN ?= $(HOME)/toolchains/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi/bin
+ifneq ($(wildcard $(ARM_TOOLCHAIN)),)
+export PATH := $(ARM_TOOLCHAIN):$(PATH)
+endif
+
 .PHONY: all check syntax gen chuleta install compile flash clean
 
 all: gen
