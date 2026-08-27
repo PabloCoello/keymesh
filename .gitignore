@@ -1,0 +1,15 @@
+# Directorio temporal del chequeo de sintaxis
+.synt/
+
+__pycache__/
+*.pyc
+
+# Binarios de firmware: se generan, no se versionan
+*.bin
+*.hex
+*.uf2
+
+.DS_Store
+
+# Scratch temporal de agentes
+.ai/tmp/

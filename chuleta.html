@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voyager — chuleta del layout</title>
+<style>
+  :root {
+    --ink: #e8e6e1;
+    --dim: #6f6b66;
+    --line: #26241f;
+    --bg: #100f0d;
+    --panel: #171613;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    padding: 40px 28px 80px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 14px/1.5 ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  header { border-bottom: 1px solid var(--line); padding-bottom: 22px; margin-bottom: 8px; }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.34em; text-transform: uppercase;
+  }
+  .lede { margin: 0; color: var(--dim); font-size: 13px; max-width: 62ch; }
+
+  /* Selector de sistema: no es decoración, cambia los chords y el color base */
+  .hosts { display: flex; gap: 0; margin: 26px 0 4px; border: 1px solid var(--line); width: fit-content; }
+  .hosts button {
+    appearance: none; background: transparent; border: 0;
+    border-right: 1px solid var(--line);
+    color: var(--dim); cursor: pointer;
+    font: inherit; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 11px 20px 10px;
+  }
+  .hosts button:last-child { border-right: 0; }
+  .hosts button[aria-pressed="true"] { color: #14120f; }
+  .hosts button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .hostnote { color: var(--dim); font-size: 12px; margin: 0 0 34px; }
+
+  .layer { margin: 0 0 46px; }
+  .layer > hgroup { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; }
+  .layer h2 {
+    margin: 0; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase;
+  }
+  .layer .how { color: var(--dim); font-size: 12px; }
+
+  .board { display: flex; gap: 62px; justify-content: center; }
+  .half { display: flex; gap: 5px; }
+  .col { display: flex; flex-direction: column; gap: 5px; }
+
+  .key {
+    width: 74px; height: 52px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--panel);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px; padding: 3px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .key .lb { font-size: 12px; line-height: 1.15; }
+  .key .sb { font-size: 9px; line-height: 1.1; opacity: 0.72; letter-spacing: 0.02em; }
+  .key.off { opacity: 0.2; }
+  .key.trans .lb { color: var(--dim); }
+  /* Las teclas cuyo chord depende del sistema llevan una marca en la esquina */
+  .key.osdep { position: relative; }
+  .key.osdep::after {
+    content: ""; position: absolute; top: 4px; right: 4px;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor; opacity: 0.55;
+  }
+
+  .thumbs { display: flex; justify-content: center; gap: 62px; margin-top: 7px; }
+  .thumbs .side { display: flex; gap: 5px; }
+  .thumbs .side.l { margin-left: 210px; }
+  .thumbs .side.r { margin-right: 210px; }
+
+  footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--dim); font-size: 12px; }
+  footer p { margin: 0 0 8px; max-width: 74ch; }
+  code { color: var(--ink); }
+
+  @media (max-width: 1080px) {
+    body { padding: 24px 14px 60px; }
+    .board { gap: 26px; }
+    .key { width: 58px; height: 46px; }
+    .key .lb { font-size: 11px; }
+    .thumbs { gap: 26px; }
+    .thumbs .side.l { margin-left: 120px; }
+    .thumbs .side.r { margin-right: 120px; }
+  }
+  @media (max-width: 720px) {
+    .board, .thumbs { flex-direction: column; align-items: center; gap: 14px; }
+    .thumbs .side.l, .thumbs .side.r { margin: 0; }
+  }
+  @media print {
+    body { padding: 0; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .hosts, .hostnote { display: none; }
+    .layer { break-inside: avoid; page-break-inside: avoid; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .key { transition: background-color 140ms ease, color 140ms ease; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Voyager · chuleta del layout</h1>
+    <p class="lede">Los colores son los mismos valores que el firmware manda a los LEDs, así que
+    el papel y el teclado coinciden. Generada desde <code>keymap.c</code>.</p>
+  </header>
+
+  <div class="hosts" role="group" aria-label="Sistema anfitrión">
+    <button type="button" data-os="mac" aria-pressed="true">macOS</button>
+    <button type="button" data-os="win" aria-pressed="false">Windows</button>
+    <button type="button" data-os="lin" aria-pressed="false">Ubuntu</button>
+  </div>
+  <p class="hostnote">El punto en la esquina de una tecla significa que su chord depende del
+  sistema. El color de la capa Base es el que verás encendido tras conmutar el KVM.
+  Nav y Sym se fijan con un toque y se quitan con otro; mantenerlas da capa momentánea.</p>
+
+  <main id="layers"></main>
+
+  <footer>
+    <p>Meta se enciende cuando Nav y Sym están activas a la vez: toca una y luego
+    la otra, o mantén los dos pulgares. Para salir del todo hay que apagar las dos.</p>
+    <p><code>OS info</code> escribe el sistema detectado. Si no acierta tras conmutar el
+    ATEN, fuérzalo con <code>OS mac</code>, <code>OS win</code> u <code>OS lin</code>.</p>
+  </footer>
+</div>
+
+<script>
+const MODEL = {"layers":[{"id":"L_BASE","title":"Base","how":"Letras, dígitos y los dos modificadores","keys":[{"label":"Esc","code":"KC_ESCAPE","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"1","code":"KC_1","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"2","code":"KC_2","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"3","code":"KC_3","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"4","code":"KC_4","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"5","code":"KC_5","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"6","code":"KC_6","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"7","code":"KC_7","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"8","code":"KC_8","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"9","code":"KC_9","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"0","code":"KC_0","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Ctrl","code":"KC_RIGHT_CTRL","off":false,"hueOffset":96,"sat":255,"val":230},{"label":"Tab","code":"KC_TAB","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Q","code":"KC_Q","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"W","code":"KC_W","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"E","code":"KC_E","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"R","code":"KC_R","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"T","code":"KC_T","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Y","code":"KC_Y","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"U","code":"KC_U","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"I","code":"KC_I","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"O","code":"KC_O","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"P","code":"KC_P","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Enter","code":"KC_ENTER","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"App","code":"U_APP","off":false,"hueOffset":96,"sat":255,"val":230,"chords":["Cmd","Ctrl","Ctrl"],"osdep":true},{"label":"A","code":"KC_A","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"S","code":"KC_S","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"D","code":"KC_D","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"F","code":"KC_F","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"G","code":"KC_G","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"H","code":"KC_H","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"J","code":"KC_J","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"K","code":"KC_K","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"L","code":"KC_L","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"ñ","code":"ES_NTIL","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"´","code":"ES_ACUT","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Shift","code":"KC_LEFT_SHIFT","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Z","code":"KC_Z","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"X","code":"KC_X","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"C","code":"KC_C","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"V","code":"KC_V","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"B","code":"KC_B","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"N","code":"KC_N","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"M","code":"KC_M","off":false,"hueOffset":0,"sat":190,"val":150},{"label":",","code":"KC_COMMA","off":false,"hueOffset":0,"sat":190,"val":150},{"label":".","code":"KC_DOT","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"-","code":"ES_MINS","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Shift","code":"KC_RIGHT_SHIFT","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Retr","code":"KC_BSPC","off":false,"hueOffset":0,"sat":190,"val":150},{"label":"Nav","code":"TT(L_NAV)","off":false,"hueOffset":0,"sat":190,"val":150,"sub":"toque fija"},{"label":"Sym","code":"TT(L_SYM)","off":false,"hueOffset":0,"sat":190,"val":150,"sub":"toque fija"},{"label":"Espacio","code":"KC_SPACE","off":false,"hueOffset":0,"sat":190,"val":150}]},{"id":"L_NAV","title":"Nav","how":"Pulgar izquierdo interior","keys":[{"label":"Esc","code":"KC_ESCAPE","off":false,"color":"#008dc8"},{"label":"F1","code":"KC_F1","off":false,"color":"#787878"},{"label":"F2","code":"KC_F2","off":false,"color":"#787878"},{"label":"F3","code":"KC_F3","off":false,"color":"#787878"},{"label":"F4","code":"KC_F4","off":false,"color":"#787878"},{"label":"F5","code":"KC_F5","off":false,"color":"#787878"},{"label":"F6","code":"KC_F6","off":false,"color":"#787878"},{"label":"F7","code":"KC_F7","off":false,"color":"#787878"},{"label":"F8","code":"KC_F8","off":false,"color":"#787878"},{"label":"F9","code":"KC_F9","off":false,"color":"#787878"},{"label":"F10","code":"KC_F10","off":false,"color":"#787878"},{"label":"F11","code":"KC_F11","off":false,"color":"#787878"},{"label":"Tab","code":"KC_TAB","off":false,"color":"#008dc8"},{"label":"Pest ←","code":"LCTL(LSFT(KC_TAB))","off":false,"color":"#00be00"},{"label":"Pest →","code":"LCTL(KC_TAB)","off":false,"color":"#00be00"},{"label":"Zoom −","code":"U_ZOUT","off":false,"color":"#00be00","chords":["Cmd −","Ctrl −","Ctrl −"],"osdep":true},{"label":"Zoom +","code":"U_ZIN","off":false,"color":"#00be00","chords":["Cmd +","Ctrl +","Ctrl +"],"osdep":true},{"label":"Captura","code":"U_SHOT","off":false,"color":"#00be00","chords":["Cmd ⇧ 4","Win ⇧ S","⇧ ImprPant"],"osdep":true},{"label":"Inicio","code":"U_LNST","off":false,"color":"#008dc8","chords":["Cmd ←","Home","Home"],"osdep":true},{"label":"PgUp","code":"KC_PAGE_UP","off":false,"color":"#008dc8"},{"label":"↑","code":"KC_UP","off":false,"color":"#008dc8"},{"label":"PgDn","code":"KC_PGDN","off":false,"color":"#008dc8"},{"label":"Fin","code":"U_LNEND","off":false,"color":"#008dc8","chords":["Cmd →","End","End"],"osdep":true},{"label":"Enter","code":"KC_ENTER","off":false,"color":"#008dc8"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"Gui","code":"KC_LEFT_GUI","off":false,"color":"#6324aa"},{"label":"Alt","code":"KC_LEFT_ALT","off":false,"color":"#6324aa"},{"label":"Ctrl","code":"KC_LEFT_CTRL","off":false,"color":"#6324aa"},{"label":"Shift","code":"KC_LEFT_SHIFT","off":false,"color":"#6324aa"},{"label":"AltGr","code":"KC_RIGHT_ALT","off":false,"color":"#6324aa"},{"label":"⇤ pal","code":"U_WLFT","off":false,"color":"#008dc8","chords":["Opt ←","Ctrl ←","Ctrl ←"],"osdep":true},{"label":"←","code":"KC_LEFT","off":false,"color":"#008dc8"},{"label":"↓","code":"KC_DOWN","off":false,"color":"#008dc8"},{"label":"→","code":"KC_RIGHT","off":false,"color":"#008dc8"},{"label":"pal ⇥","code":"U_WRGT","off":false,"color":"#008dc8","chords":["Opt →","Ctrl →","Ctrl →"],"osdep":true},{"label":"Supr","code":"KC_DELETE","off":false,"color":"#008dc8"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"Undo","code":"U_UNDO","off":false,"color":"#00be00","chords":["Cmd Z","Ctrl Z","Ctrl Z"],"osdep":true},{"label":"Cortar","code":"U_CUT","off":false,"color":"#00be00","chords":["Cmd X","Ctrl X","Ctrl X"],"osdep":true},{"label":"Copiar","code":"U_COPY","off":false,"color":"#00be00","chords":["Cmd C","Ctrl C","Ctrl C"],"osdep":true},{"label":"Pegar","code":"U_PASTE","off":false,"color":"#00be00","chords":["Cmd V","Ctrl V","Ctrl V"],"osdep":true},{"label":"Redo","code":"U_REDO","off":false,"color":"#00be00","chords":["Cmd ⇧ Z","Ctrl ⇧ Z","Ctrl ⇧ Z"],"osdep":true},{"label":"App ↹","code":"U_APPSW","off":false,"color":"#dc6700","chords":["Cmd Tab sostenido","Alt Tab sostenido","Alt Tab sostenido"],"osdep":true},{"label":"Ventana","code":"U_WINN","off":false,"color":"#dc6700","chords":["Cmd º","Alt Tab","Alt º"],"osdep":true},{"label":"Escr ←","code":"U_DESKL","off":false,"color":"#dc6700","chords":["Ctrl ←","Win Ctrl ←","Super PgUp"],"osdep":true},{"label":"Escr →","code":"U_DESKR","off":false,"color":"#dc6700","chords":["Ctrl →","Win Ctrl →","Super PgDn"],"osdep":true},{"label":"Exposé","code":"U_MSN","off":false,"color":"#dc6700","chords":["Ctrl ↑","Win Tab","Super"],"osdep":true},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"Borra pal","code":"U_DWBK","off":false,"color":"#008dc8","chords":["Opt Retr","Ctrl Retr","Ctrl Retr"],"osdep":true},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"Espacio","code":"KC_SPACE","off":false,"color":"#008dc8"}]},{"id":"L_SYM","title":"Sym","how":"Pulgar derecho interior","keys":[{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"¡","code":"ES_IEXL","off":false,"color":"#c3a000"},{"label":"¿","code":"ES_IQUE","off":false,"color":"#c3a000"},{"label":"'","code":"ES_QUOT","off":false,"color":"#c3a000"},{"label":"?","code":"ES_QUES","off":false,"color":"#c3a000"},{"label":"`","code":"ES_GRV","off":false,"color":"#c3a000"},{"label":"€","code":"ES_EURO","off":false,"color":"#c3421a"},{"label":"\"","code":"ES_DQUO","off":false,"color":"#c3421a"},{"label":"%","code":"ES_PERC","off":false,"color":"#c3421a"},{"label":"$","code":"ES_DLR","off":false,"color":"#c3421a"},{"label":"_","code":"ES_UNDS","off":false,"color":"#c3421a"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"|","code":"ES_PIPE","off":false,"color":"#c3a000"},{"label":"@","code":"ES_AT","off":false,"color":"#c3a000"},{"label":"#","code":"ES_HASH","off":false,"color":"#c3a000"},{"label":"~","code":"ES_TILD","off":false,"color":"#c3a000"},{"label":"&","code":"ES_AMPR","off":false,"color":"#c3a000"},{"label":"+","code":"ES_PLUS","off":false,"color":"#c3421a"},{"label":"-","code":"ES_MINS","off":false,"color":"#c3421a"},{"label":"/","code":"ES_SLSH","off":false,"color":"#c3421a"},{"label":"*","code":"ES_ASTR","off":false,"color":"#c3421a"},{"label":"º","code":"ES_MORD","off":false,"color":"#c3421a"},{"label":"Enter","code":"KC_ENTER","off":false,"color":"#c3421a"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"{","code":"ES_LCBR","off":false,"color":"#c3a000"},{"label":"[","code":"ES_LBRC","off":false,"color":"#c3a000"},{"label":"(","code":"ES_LPRN","off":false,"color":"#c3a000"},{"label":"<","code":"ES_LABK","off":false,"color":"#c3a000"},{"label":"=","code":"ES_EQL","off":false,"color":"#c3a000"},{"label":"Vol−","code":"KC_AUDIO_VOL_DOWN","off":false,"color":"#b919af"},{"label":"Vol+","code":"KC_AUDIO_VOL_UP","off":false,"color":"#b919af"},{"label":"Mute","code":"KC_AUDIO_MUTE","off":false,"color":"#b919af"},{"label":"Play","code":"KC_MEDIA_PLAY_PAUSE","off":false,"color":"#b919af"},{"label":"Ant","code":"KC_MEDIA_PREV_TRACK","off":false,"color":"#b919af"},{"label":"Sig","code":"KC_MEDIA_NEXT_TRACK","off":false,"color":"#b919af"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"}","code":"ES_RCBR","off":false,"color":"#c3a000"},{"label":"]","code":"ES_RBRC","off":false,"color":"#c3a000"},{"label":")","code":"ES_RPRN","off":false,"color":"#c3a000"},{"label":">","code":"ES_RABK","off":false,"color":"#c3a000"},{"label":"\\","code":"U_BSLS","off":false,"color":"#c3a000","chords":["AltGr 6","AltGr º","AltGr º"],"osdep":true},{"label":"^","code":"ES_CIRC","off":false,"color":"#c3421a"},{"label":"¨","code":"ES_DIAE","off":false,"color":"#c3421a"},{"label":";","code":"ES_SCLN","off":false,"color":"#c3421a"},{"label":":","code":"ES_COLN","off":false,"color":"#c3421a"},{"label":"ç","code":"ES_CCED","off":false,"color":"#c3421a"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"Retr","code":"KC_BSPC","off":false,"color":"#c3a000"},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"Espacio","code":"KC_SPACE","off":false,"color":"#c3a000"}]},{"id":"L_META","title":"Meta","how":"Toca Nav y luego Sym, o mantén los dos","keys":[{"label":"FLASH","code":"QK_BOOT","off":false,"color":"#c80000"},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"Pant ←","code":"U_DISPL","off":false,"color":"#dc6700","chords":["Ctrl Opt Cmd ←","Win ⇧ ←","⇧ Super ←"],"osdep":true},{"label":"Pant →","code":"U_DISPR","off":false,"color":"#dc6700","chords":["Ctrl Opt Cmd →","Win ⇧ →","⇧ Super →"],"osdep":true},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"OS auto","code":"U_OSAUTO","off":false,"color":"#00cfd2"},{"label":"OS mac","code":"U_OSMAC","off":false,"color":"#00cfd2"},{"label":"OS win","code":"U_OSWIN","off":false,"color":"#00cfd2"},{"label":"OS lin","code":"U_OSLIN","off":false,"color":"#00cfd2"},{"label":"OS info","code":"U_OSDBG","off":false,"color":"#00cfd2"},{"label":"Divide ─","code":"HRD_SPLH","off":false,"color":"#0000d7","sub":"Ctrl Alt ⇧ D"},{"label":"Divide │","code":"HRD_SPLV","off":false,"color":"#0000d7","sub":"Ctrl Alt D"},{"label":"Nueva pest.","code":"HRD_NEW","off":false,"color":"#0000d7","sub":"Ctrl Alt C"},{"label":"Pestaña ←","code":"HRD_TABP","off":false,"color":"#0000d7","sub":"Ctrl Alt P"},{"label":"Pestaña →","code":"HRD_TABN","off":false,"color":"#0000d7","sub":"Ctrl Alt N"},{"label":"Enter","code":"KC_ENTER","off":false,"color":"#8c8c8c"},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"LED on","code":"RM_TOGG","off":false,"color":"#acaf00"},{"label":"LED modo","code":"RM_NEXT","off":false,"color":"#acaf00"},{"label":"Tono +","code":"RM_HUEU","off":false,"color":"#acaf00"},{"label":"Brillo +","code":"RM_VALU","off":false,"color":"#acaf00"},{"label":"LED capa","code":"TOGGLE_LAYER_COLOR","off":false,"color":"#acaf00"},{"label":"Panel ←","code":"HRD_LEFT","off":false,"color":"#0000d7","sub":"Ctrl Alt H"},{"label":"Panel ↓","code":"HRD_DOWN","off":false,"color":"#0000d7","sub":"Ctrl Alt J"},{"label":"Panel ↑","code":"HRD_UP","off":false,"color":"#0000d7","sub":"Ctrl Alt K"},{"label":"Panel →","code":"HRD_RIGHT","off":false,"color":"#0000d7","sub":"Ctrl Alt L"},{"label":"Zoom","code":"HRD_ZOOM","off":false,"color":"#0000d7","sub":"Ctrl Alt Z"},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"Borra EE","code":"EE_CLR","off":false,"color":"#c80000"},{"label":"LED fijo","code":"RGB_SLD","off":false,"color":"#acaf00"},{"label":"Tono −","code":"RM_HUED","off":false,"color":"#acaf00"},{"label":"Brillo −","code":"RM_VALD","off":false,"color":"#acaf00"},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"Prefijo","code":"HRD_PFX","off":false,"color":"#0000d7","sub":"Ctrl B"},{"label":"Cierra","code":"HRD_CLOSE","off":false,"color":"#0000d7","sub":"Ctrl Alt X"},{"label":"Desacopla","code":"HRD_DETACH","off":false,"color":"#0000d7","sub":"Ctrl Alt Q"},{"label":"Espacios","code":"HRD_WS","off":false,"color":"#0000d7","sub":"Ctrl Alt W"},{"label":"Ir a…","code":"HRD_GOTO","off":false,"color":"#0000d7","sub":"Ctrl Alt G"},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"","code":"KC_TRANSPARENT","off":true,"color":null},{"label":"","code":"KC_NO","off":true,"color":null}]}],"baseHue":{"mac":128,"win":160,"lin":20}};
+const STAGGER = [10, 6, 0, 6, 12, 16];
+const OS_INDEX = { mac: 0, win: 1, lin: 2 };
+const HOST_LABEL = { mac: "macOS", win: "Windows", lin: "Ubuntu" };
+let currentOs = "mac";
+
+function hsvToHex(h, s, v) {
+  h = ((h % 256) + 256) % 256;
+  const hh = (h / 255) * 6, i = Math.floor(hh), f = hh - i;
+  const sn = s / 255, vn = v / 255;
+  const p = vn * (1 - sn), q = vn * (1 - sn * f), t = vn * (1 - sn * (1 - f));
+  const c = [[vn,t,p],[q,vn,p],[p,vn,t],[p,q,vn],[t,p,vn],[vn,p,q]][i % 6];
+  return "#" + c.map(x => Math.round(x * 255).toString(16).padStart(2, "0")).join("");
+}
+
+function readable(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 140 ? "#14120f" : "#f2f0ec";
+}
+
+function keyEl(k, layerId) {
+  const el = document.createElement("div");
+  el.className = "key";
+  if (k.off) el.classList.add("off");
+  if (k.code === "KC_TRANSPARENT") el.classList.add("trans");
+  if (k.osdep) el.classList.add("osdep");
+
+  let bg = null;
+  if (layerId === "L_BASE" && !k.off) {
+    bg = hsvToHex(MODEL.baseHue[currentOs] + k.hueOffset, k.sat, k.val);
+  } else if (k.color) {
+    bg = k.color;
+  }
+  if (bg) {
+    el.style.background = bg;
+    el.style.color = readable(bg);
+    el.style.borderColor = "transparent";
+  }
+
+  const lb = document.createElement("div");
+  lb.className = "lb";
+  lb.textContent = k.code === "KC_TRANSPARENT" ? "·" : k.label;
+  el.appendChild(lb);
+
+  const sub = k.chords ? k.chords[OS_INDEX[currentOs]] : k.sub;
+  if (sub) {
+    const sb = document.createElement("div");
+    sb.className = "sb";
+    sb.textContent = sub;
+    el.appendChild(sb);
+  }
+  return el;
+}
+
+function render() {
+  const root = document.getElementById("layers");
+  root.textContent = "";
+  for (const layer of MODEL.layers) {
+    const sec = document.createElement("section");
+    sec.className = "layer";
+
+    const hg = document.createElement("hgroup");
+    const h2 = document.createElement("h2");
+    h2.textContent = layer.title;
+    const how = document.createElement("span");
+    how.className = "how";
+    how.textContent = layer.how;
+    hg.append(h2, how);
+    sec.appendChild(hg);
+
+    const board = document.createElement("div");
+    board.className = "board";
+    for (const side of [0, 1]) {
+      const half = document.createElement("div");
+      half.className = "half";
+      for (let c = 0; c < 6; c++) {
+        const col = document.createElement("div");
+        col.className = "col";
+        const physical = side === 0 ? c : 5 - c;
+        col.style.marginTop = STAGGER[physical] + "px";
+        for (let r = 0; r < 4; r++) {
+          col.appendChild(keyEl(layer.keys[r * 12 + side * 6 + c], layer.id));
+        }
+        half.appendChild(col);
+      }
+      board.appendChild(half);
+    }
+    sec.appendChild(board);
+
+    const th = document.createElement("div");
+    th.className = "thumbs";
+    for (const side of [0, 1]) {
+      const s = document.createElement("div");
+      s.className = "side " + (side === 0 ? "l" : "r");
+      for (const i of side === 0 ? [48, 49] : [50, 51]) {
+        s.appendChild(keyEl(layer.keys[i], layer.id));
+      }
+      th.appendChild(s);
+    }
+    sec.appendChild(th);
+    root.appendChild(sec);
+  }
+}
+
+for (const btn of document.querySelectorAll(".hosts button")) {
+  btn.addEventListener("click", () => {
+    currentOs = btn.dataset.os;
+    for (const b of document.querySelectorAll(".hosts button")) {
+      const on = b === btn;
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.style.background = on ? hsvToHex(MODEL.baseHue[currentOs], 190, 210) : "transparent";
+    }
+    render();
+  });
+}
+document.querySelector('.hosts button[data-os="mac"]').style.background =
+  hsvToHex(MODEL.baseHue.mac, 190, 210);
+render();
+</script>
+</body>
+</html>

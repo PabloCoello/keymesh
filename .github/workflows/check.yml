@@ -1,0 +1,36 @@
+# Verifica la coherencia del layout en cada push.
+#
+# No compila el firmware: eso necesita el toolchain de ARM y la rama
+# firmware24 del fork de ZSA. Esto solo comprueba lo que se puede comprobar
+# en segundos, que es justo lo que se rompe al editar keymap.c a mano:
+# el recuento de teclas, los keycodes sin tratar o sin etiquetar, y la
+# sintaxis del fichero.
+name: check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: make check
+        run: make check
+
+      - name: Los ficheros generados están al día
+        run: |
+          make gen
+          if ! git diff --quiet -- ledmap.h chuleta.html; then
+            echo "::error::ledmap.h o chuleta.html no coinciden con keymap.c."
+            echo "Ejecuta 'make' y commitea los ficheros generados."
+            git diff --stat -- ledmap.h chuleta.html
+            exit 1
+          fi
