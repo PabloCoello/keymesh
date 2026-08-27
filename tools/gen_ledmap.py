@@ -9,7 +9,9 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 import re
-import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from led_order import to_led_order
 
 SRC = os.path.join(ROOT, "keymap.c")
 DST = os.path.join(ROOT, "ledmap.h")
@@ -128,6 +130,9 @@ out = []
 out.append("// GENERADO por gen_ledmap.py. No editar a mano.")
 out.append("// Cada capa ilumina solo las teclas que hace algo. En la capa BASE el")
 out.append("// campo de tono se SUMA a base_hue(), que depende del host detectado.")
+out.append("//")
+out.append("// Las entradas van en orden de INDICE DE LED, que no es el de")
+out.append("// LAYOUT_voyager. La permutacion esta en tools/led_order.py.")
 out.append("#pragma once")
 out.append("")
 out.append("const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {")
@@ -146,7 +151,8 @@ for name, keys in layers:
         else:
             c = color_meta(k)
         rows.append(c)
-    body = ", ".join("{%d,%d,%d}" % c for c in rows)
+    # rows va en orden de keymap; el firmware indexa por LED. Ver led_order.py.
+    body = ", ".join("{%d,%d,%d}" % c for c in to_led_order(rows))
     out.append(f"    [{name}] = {{ {body} }},")
     out.append("")
 

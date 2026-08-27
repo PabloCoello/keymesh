@@ -5,6 +5,7 @@ Los colores de las teclas son los mismos valores HSV que el firmware manda a
 los LEDs, convertidos a hex. Así el papel y el teclado coinciden.
 """
 import os
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 import colorsys
@@ -15,7 +16,9 @@ KEYMAP = os.path.join(ROOT, "keymap.c")
 LEDMAP = os.path.join(ROOT, "ledmap.h")
 DST = os.path.join(ROOT, "chuleta.html")
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from labels import LAYER_TITLES, LABELS, CHORDS, HERDR, SUBS
+from led_order import to_key_order
 
 # Tonos base por sistema, replicando base_hue() de keymap.c
 BASE_HUE = {"mac": 128, "win": 160, "lin": 20}
@@ -84,7 +87,10 @@ led_src = open(LEDMAP, encoding="utf-8").read()
 led = {}
 for m in re.finditer(r"\[(L_\w+)\]\s*=\s*\{(.*?)\},\s*\n", led_src, re.S):
     trips = re.findall(r"\{(\d+),(\d+),(\d+)\}", m.group(2))
-    led[m.group(1)] = [tuple(int(x) for x in t) for t in trips]
+    trips = [tuple(int(x) for x in t) for t in trips]
+    assert len(trips) == 52, m.group(1)
+    # ledmap.h esta en orden de LED; la chuleta dibuja en orden de keymap.
+    led[m.group(1)] = to_key_order(trips)
 for name, _ in layers:
     assert len(led[name]) == 52, name
 

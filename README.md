@@ -263,6 +263,12 @@ Comprobado: los cuatro `LAYOUT_voyager` tienen 52 teclas, los 42 keycodes
 personalizados están declarados y resueltos, y el fichero pasa
 `gcc -fsyntax-only -Wall -Wextra` contra stubs de la API de QMK.
 
+El orden de los LEDs está verificado contra `keyboard.json` del Voyager, y no
+es el de `LAYOUT_voyager`: el keymap enumera fila por fila alternando mitades y
+el índice de LED recorre una mitad entera y luego la otra. `ledmap.h` se emite
+ya permutado; la tabla está en `tools/led_order.py` y `make check` la contrasta
+con la definición del teclado cuando encuentra `qmk_firmware`.
+
 La compilación real también está hecha, contra la rama `firmware24` del fork de
 ZSA con el toolchain de Arm 13.3.rel1: enlaza sin un solo aviso y produce un
 binario de 54 478 bytes en la revisión en que se escribió esto. Es decir, todos

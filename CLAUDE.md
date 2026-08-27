@@ -31,6 +31,8 @@ macOS aunque el chord que envía sea distinto.
 2. Ningún keycode propio queda declarado sin tratar ni usado sin declarar.
 3. Toda tecla colocada en una capa tiene etiqueta en `tools/labels.py`.
 4. `keymap.c` compila con `-Wall -Wextra` contra stubs de la API de QMK.
+5. La permutación de `tools/led_order.py` sigue coincidiendo con la definición
+   del teclado, si `qmk_firmware` está disponible.
 
 ### Entorno de compilación
 
@@ -85,6 +87,14 @@ es el primer error de compilación que verás.
 **`i18n.h` describe solo el layout español de PC.** Los símbolos que difieren en
 macOS no van ahí: se resuelven en `os_chord()`. Ahora mismo el único conocido es
 el backslash (`U_BSLS`). Si aparecen más, siguen el mismo patrón.
+
+**El orden de los LEDs no es el de `LAYOUT_voyager`.** El keymap enumera fila
+por fila alternando mitades; el índice de LED recorre la mitad izquierda entera
+y luego la derecha. `set_layer_color()` indexa por LED, así que `ledmap.h` se
+emite permutado y la chuleta lo deshace al leerlo. La tabla vive en
+`tools/led_order.py` y es la única fuente: no la dupliques ni reordenes
+`ledmap.h` a mano. Sin ella, 44 de las 52 teclas se iluminan del color de otra,
+que es un fallo que solo se ve con el teclado en la mano.
 
 **No usar el bloque EEPROM de usuario.** El firmware de ZSA guarda su propia
 configuración ahí y no se ha verificado que no colisione. El override manual de

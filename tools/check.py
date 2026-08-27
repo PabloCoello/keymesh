@@ -7,6 +7,8 @@ Comprueba tres cosas que el compilador no siempre deja claras:
   2. Ningún keycode personalizado queda declarado sin tratar, ni usado sin
      declarar.
   3. Todos los keycodes de las capas tienen etiqueta en la chuleta.
+  4. La permutacion keymap <-> LED de led_order.py sigue coincidiendo con la
+     definicion del teclado, si qmk_firmware esta disponible.
 
 Devuelve 1 si algo falla.
 """
@@ -86,6 +88,15 @@ def main():
         and not re.match(r"^KC_(F\d+|\w)$", k))
     if unlabelled:
         problems.append("sin etiqueta en la chuleta: " + ", ".join(unlabelled))
+
+    # El orden de los LEDs no es el de LAYOUT_voyager, y la tabla que los cruza
+    # esta versionada en led_order.py para no depender de tener qmk_firmware.
+    # Si esta ahi, se contrasta: es la unica forma de que la tabla no se
+    # desvie en silencio y los colores acaben en la tecla equivocada.
+    import led_order
+    drift = led_order.verify(os.environ.get("QMK", os.path.join(os.path.expanduser("~"), "qmk_firmware")))
+    if drift:
+        problems.append("orden de LEDs: " + drift)
 
     for p in problems:
         print("  FALLO", p)
