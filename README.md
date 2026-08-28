@@ -187,46 +187,92 @@ swap, no la tecla.
 
 ## 6. Compilar y flashear
 
-### Montar el entorno en macOS
+### Montar el entorno
 
-Tres avisos que cuestan una tarde si los descubres por tu cuenta.
+Tres avisos que cuestan una tarde si los descubres por tu cuenta. Valen para los
+tres sistemas; los comandos concretos van después, uno por sistema.
 
-**El CLI de QMK tiene que correr sobre Python 3.11.** Los scripts de build de
-`firmware24` usan `ast.Num`, que Python eliminó en la 3.12. Con una versión más
-nueva la compilación muere en `Platform not defined` tras un
+**El CLI de QMK tiene que correr sobre Python 3.11.** `lib/python/qmk/math.py`
+usa `ast.Num`, que Python eliminó en la 3.12. Con una versión más nueva la
+compilación muere en `Platform not defined` tras un
 `AttributeError: module 'ast' has no attribute 'Num'`, que no dice nada útil.
+
+**El toolchain de ARM va con la versión fija.** Se usa el prebuilt oficial de
+Arm 13.3.rel1 y no el del gestor de paquetes de cada sistema: un toolchain
+distinto produce un binario distinto, y con firmware conviene que eso sea una
+decisión y no un efecto de lo que haya en el disco. Además trae newlib, que es
+lo que le falta al `arm-none-eabi-gcc` de Homebrew; sin ella no encuentra
+`stdint.h` y la compilación muere en el primer fichero de ChibiOS.
+
+El `Makefile` lo antepone al PATH si lo encuentra bajo `~/toolchains`. Compone
+el nombre del directorio con `uname`, porque Arm publica un tarball por host:
+`darwin-arm64` en el Mac y `x86_64` en el PC con Ubuntu. Para usar otra versión,
+descomprímela al lado y pásala por variable:
+
+    make compile ARM_TOOLCHAIN=$HOME/toolchains/<otra-version>/bin
+
+Si te quedas con la nueva, cambia `ARM_VERSION` en el `Makefile` y anótala aquí.
+
+**`qmk doctor` se queja de AVR.** Falta `avr-gcc`, `avrdude` y compañía, y lo
+marca como problema grave. El Voyager es ARM (STM32F303): no aplica.
+
+#### macOS
 
     brew install python@3.11 hidapi dfu-util
     pipx install --python /opt/homebrew/opt/python@3.11/bin/python3.11 qmk
     qmk setup -b firmware24 -y zsa/qmk_firmware
     pipx inject qmk -r ~/qmk_firmware/requirements.txt
 
+    mkdir -p ~/toolchains && cd ~/toolchains
+    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+    tar -xf arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+
 Se instala el CLI con `pipx` y no con `brew install qmk/qmk/qmk` porque la
 fórmula del tap de QMK arrastra `arm-none-eabi-gcc@8` desde `osx-cross/arm`, un
 segundo tap de terceros. `hidapi` lo necesita el módulo `hid` de Python;
 `dfu-util` es lo que flashea el Voyager.
 
-**El `arm-none-eabi-gcc` de Homebrew no sirve.** Es solo el compilador, sin
-newlib, así que no encuentra `stdint.h` y la compilación muere en el primer
-fichero de ChibiOS. En Homebrew no hay newlib por separado. Usa el prebuilt
-oficial de Arm, que sí la trae:
+#### Ubuntu
+
+Comprobado en Ubuntu 24.04 sobre x86_64.
+
+    sudo apt install dfu-util
+
+    uv python install 3.11
+    pipx install --python "$(uv python find 3.11)" qmk
+
+    git clone --recurse-submodules -b firmware24 \
+      https://github.com/zsa/qmk_firmware.git ~/qmk_firmware
+    qmk config user.qmk_home=$HOME/qmk_firmware
+    pipx inject qmk $(grep -vE '^\s*#|^\s*$' ~/qmk_firmware/requirements.txt | tr '\n' ' ')
 
     mkdir -p ~/toolchains && cd ~/toolchains
-    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
-    tar -xf arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
+    tar -xf arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
 
-El `Makefile` lo antepone al PATH si está en esa ruta. La versión va fija a
-propósito: un toolchain distinto produce un binario distinto, y con firmware
-conviene que eso sea una decisión y no un efecto de lo que haya en el disco.
-Para usar otro, descomprímelo al lado y pásalo por variable:
+Cuatro diferencias con macOS, todas de empaquetado:
 
-    make compile ARM_TOOLCHAIN=$HOME/toolchains/<otra-version>/bin
+- Ubuntu 24.04 no trae Python 3.11, solo el 3.12 del sistema. Arriba se coge
+  con `uv`, que no pide sudo; el PPA `deadsnakes` sirve igual.
+- `pipx inject -r` no existe hasta pipx 1.5 y Ubuntu 24.04 empaqueta la 1.4.3,
+  que solo acepta la lista de paquetes en línea. De ahí el `grep`.
+- `dfu-util` hace falta para compilar, no solo para flashear. El paquete trae
+  `dfu-suffix`, y `builddefs/common_rules.mk` lo llama al generar el `.bin`
+  porque `keyboards/zsa/voyager/rules.mk` define `DFU_SUFFIX_ARGS`. Sin él el
+  firmware enlaza y luego muere con `dfu-suffix: not found`.
+- En vez de `qmk setup` basta clonar el fork y apuntar `user.qmk_home`.
 
-Si te quedas con el nuevo, cambia el valor por defecto de `ARM_TOOLCHAIN` en el
-`Makefile` y anota aquí la versión.
+Para flashear hacen falta además las reglas de udev de ZSA. Las de QMK
+(`util/udev/50-qmk.rules`) no sirven: cubren el DFU genérico de STM32
+(`0483:df11`), y el bootloader del Voyager es `3297:0791`, como se ve en el
+`DFU_ARGS` de `keyboards/zsa/voyager/rules.mk`. Copia el bloque del
+[wiki de ZSA](https://github.com/zsa/wally/wiki/Linux-install) a
+`/etc/udev/rules.d/50-zsa.rules` y recarga:
 
-**`qmk doctor` se queja de AVR.** Falta `avr-gcc`, `avrdude` y compañía, y lo
-marca como problema grave. El Voyager es ARM (STM32F303): no aplica.
+    sudo udevadm control --reload-rules && sudo udevadm trigger
+
+Tu usuario tiene que estar en el grupo `plugdev`. Compruébalo con `id -nG`; si
+no aparece, `sudo usermod -aG plugdev $USER` y vuelve a iniciar sesión.
 
 ### El bucle de trabajo
 
