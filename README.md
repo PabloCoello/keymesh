@@ -206,7 +206,7 @@ lo que le falta al `arm-none-eabi-gcc` de Homebrew; sin ella no encuentra
 
 El `Makefile` lo antepone al PATH si lo encuentra bajo `~/toolchains`. Compone
 el nombre del directorio con `uname`, porque Arm publica un tarball por host:
-`darwin-arm64` en el Mac y `x86_64` en el PC con Ubuntu. Para usar otra versión,
+`darwin-arm64` en el Mac y `x86_64` en Ubuntu. Para usar otra versión,
 descomprímela al lado y pásala por variable:
 
     make compile ARM_TOOLCHAIN=$HOME/toolchains/<otra-version>/bin
@@ -271,8 +271,8 @@ Para flashear hacen falta además las reglas de udev de ZSA. Las de QMK
 
     sudo udevadm control --reload-rules && sudo udevadm trigger
 
-Tu usuario tiene que estar en el grupo `plugdev`. Compruébalo con `id -nG`; si
-no aparece, `sudo usermod -aG plugdev $USER` y vuelve a iniciar sesión.
+Tienes que estar en el grupo `plugdev`. Compruébalo con `id -nG`; si no
+aparece, `sudo usermod -aG plugdev $USER` y vuelve a iniciar sesión.
 
 ### El bucle de trabajo
 
@@ -319,7 +319,11 @@ La compilación real también está hecha, contra la rama `firmware24` del fork 
 ZSA con el toolchain de Arm 13.3.rel1: enlaza sin un solo aviso y produce un
 binario de 54 478 bytes en la revisión en que se escribió esto. Es decir, todos
 los keycodes del keymap existen de verdad en esa rama, no solo en los stubs; el
-tamaño se mueve en cuanto tocas el keymap y no es un valor a defender. Lo que sigue sin verificar es el
+tamaño se mueve en cuanto tocas el keymap y no es un valor a defender.
+
+Repetida después en Ubuntu 24.04 sobre x86_64, con la misma rama y la misma
+versión del toolchain: enlaza igual de limpia y da 54 472 bytes, más los 16 del
+sufijo DFU que añade `dfu-suffix`. Lo que sigue sin verificar es el
 comportamiento en hardware: para eso está el protocolo de la sección 9.
 
 Aviso: en `firmware24` los keycodes `RGB_TOG`, `RGB_MOD`, `RGB_HUI` y compañía
