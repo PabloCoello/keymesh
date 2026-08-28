@@ -11,7 +11,7 @@
 
 QMK      ?= $(HOME)/qmk_firmware
 KB       ?= zsa/voyager
-KM       ?= pablo
+KM       ?= keymesh
 PY       ?= python3
 CC       ?= cc
 DEST      = $(QMK)/keyboards/$(KB)/keymaps/$(KM)

@@ -1,4 +1,4 @@
-# Layout del ZSA Voyager de Pablo
+# Layout del ZSA Voyager
 
 Firmware QMK para un ZSA Voyager que se usa en tres sistemas a través de un
 conmutador KVM ATEN. El firmware detecta el anfitrión y resuelve cada atajo en
@@ -13,8 +13,9 @@ macOS aunque el chord que envía sea distinto.
 - Monitores: un LG DualUp más un segundo monitor. Mover ventanas entre
   pantallas es un caso de uso real, no teórico.
 - Multiplexor de terminal: Herdr (herdr.dev), versión 0.8.2 al escribir esto.
-- Pablo está aprendiendo mecanografía. Sus errores se concentran en las teclas
-  de índice (b, y, f, j). Esto condiciona decisiones de diseño: ver invariantes.
+- El usuario está aprendiendo mecanografía y sus errores se concentran en las
+  teclas de índice (b, y, f, j). Esto condiciona decisiones de diseño: ver
+  invariantes.
 
 ## Cómo se trabaja en este repo
 
@@ -101,11 +102,11 @@ configuración ahí y no se ha verificado que no colisione. El override manual d
 sistema vive en RAM y se pierde al conmutar de máquina, que es justo cuando la
 detección automática vuelve a ejecutarse.
 
-**Nada de home-row mods, y mod-taps solo con motivo.** Pablo está aprendiendo
-mecanografía y sus fallos están en las teclas de índice. Añadir modificadores a
-la fila de inicio empeoraría eso, y los mod-taps producen fallos difíciles de
-diagnosticar mientras la pulsación aún no es regular. El cluster de
-modificadores de la capa NAV cubre el caso sin tocar la base.
+**Nada de home-row mods, y mod-taps solo con motivo.** Quien usa este layout
+está aprendiendo mecanografía y falla en las teclas de índice. Añadir
+modificadores a la fila de inicio empeoraría eso, y los mod-taps producen
+fallos difíciles de diagnosticar mientras la pulsación aún no es regular. El
+cluster de modificadores de la capa NAV cubre el caso sin tocar la base.
 
 **Oryx es unidireccional.** Exporta código fuente, no lo importa, y no tiene
 casilla para escribir un keycode arbitrario. `keymap.c` es la fuente de verdad;

@@ -249,11 +249,11 @@ Si tu `qmk_firmware` no está en `~/qmk_firmware`:
 A mano, si prefieres:
 
     cd qmk_firmware
-    mkdir -p keyboards/zsa/voyager/keymaps/pablo
+    mkdir -p keyboards/zsa/voyager/keymaps/keymesh
     cp keymap.c config.h rules.mk i18n.h ledmap.h \
-       keyboards/zsa/voyager/keymaps/pablo/
-    qmk compile -kb zsa/voyager -km pablo
-    qmk flash -kb zsa/voyager -km pablo
+       keyboards/zsa/voyager/keymaps/keymesh/
+    qmk compile -kb zsa/voyager -km keymesh
+    qmk flash -kb zsa/voyager -km keymesh
 
 Sobre el fork: `os_detection` está en la rama `firmware24` del fork de ZSA, así
 que compila contra ella. Si usas QMK mainline tendrás que ajustar
@@ -289,6 +289,19 @@ nuevos. Si copias trozos de layouts antiguos, te dará error de compilación ah�
 pantallas hace falta un gestor de ventanas: macOS no trae atajo nativo. Los
 chords de `Pant←` y `Pant→` son los valores por defecto de Rectangle
 (Ctrl+Opt+Cmd+←/→). Si usas otro, ajusta `U_DISPL` y `U_DISPR` en `keymap.c`.
+
+Rectangle tiene dos juegos de atajos por defecto y **hay que quedarse en el
+heredado de Spectacle**, que es el que deja las mitades en Cmd+Opt+flechas. El
+otro, el que Rectangle llama «recomendado», pone mitades, cuartos y tercios en
+Ctrl+Opt+letra, que es la familia de los chords directos de Herdr: registra
+atajos globales y se come `ctrl+alt+j`, `k`, `c`, `d` y `g` antes de que Herdr
+los vea. Es decir, cinco teclas de la capa META moverían ventanas en vez de
+mover el foco de panel. Los dos atajos que este layout usa de verdad
+(Ctrl+Opt+Cmd+←/→) son iguales en ambos juegos.
+
+El ajuste vive en `alternateDefaultShortcuts` (`false` = Spectacle, `true` =
+recomendado) y lo fija `make macos-rectangle` en dotmesh, junto con el resto de
+prefs de Rectangle. `make health` avisa si alguien lo cambia.
 
 **Ubuntu.** Comprueba en Configuración → Teclado → Atajos que Super+Page_Up y
 Super+Page_Down siguen siendo cambiar de espacio de trabajo, y que
