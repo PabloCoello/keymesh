@@ -360,6 +360,29 @@ valores por defecto entre versiones. Herdr documenta que Ctrl+Alt+flechas está
 ocupado por el cambio de espacio de trabajo en GNOME y que Ctrl+Alt+T abre un
 terminal en Ubuntu: el keymap no usa ninguno de los dos.
 
+Mira también las extensiones de GNOME Shell, no solo los atajos del sistema. La
+extensión gTile ata por defecto las cuatro teclas de foco de panel de Herdr:
+
+    action-contract-left    ['<Ctrl><Alt>h']
+    action-contract-bottom  ['<Ctrl><Alt>j']
+    action-contract-top     ['<Ctrl><Alt>k']
+    action-contract-right   ['<Ctrl><Alt>l']
+
+El síntoma es que `H:left` y compañía encogen la ventana del terminal en vez de
+mover el foco de panel. Se arregla vaciando esas cuatro:
+
+    d=~/.local/share/gnome-shell/extensions/gTile@vibou/schemas
+    for k in left right top bottom; do
+      GSETTINGS_SCHEMA_DIR="$d" \
+        gsettings set org.gnome.shell.extensions.gtile action-contract-$k "[]"
+    done
+
+Cómo buscar estas colisiones, porque cuesta: `gsettings list-recursively` no
+lista los esquemas de las extensiones, que viven fuera de la ruta por defecto, y
+`dconf dump` solo guarda lo que se aparta del valor por defecto. Una extensión
+con su atajo sin tocar es invisible para las dos herramientas. Hay que leer el
+`.gschema.xml` de la extensión.
+
 **Windows.** No hay que tocar nada.
 
 ---
