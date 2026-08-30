@@ -49,12 +49,10 @@ El firmware detecta el sistema anfitrión (`OS_DETECTION_ENABLE`, disponible en
 la rama `firmware24` del fork de ZSA) y resuelve cada atajo en tiempo de
 ejecución. Hay tres piezas:
 
-**Un modificador de aplicación.** `U_APP` ocupa la esquina inferior izquierda,
-justo donde un teclado normal pone el Ctrl de copiar y pegar: manda Cmd en macOS
-y Ctrl en Windows y Linux. Es la tecla de copiar, pegar, guardar, buscar. Su
-significado es el mismo en los tres sistemas aunque el código que envía cambie.
-Shift sube a la posición de Bloq Mayús, que para el meñique es menos viaje que
-la esquina y se pulsa mucho más a menudo.
+**Un modificador de aplicación.** La tecla de Bloq Mayús es ahora `U_APP`:
+manda Cmd en macOS y Ctrl en Windows y Linux. Es la tecla de copiar, pegar,
+guardar, buscar. Su significado es el mismo en los tres sistemas aunque el
+código que envía cambie.
 
 **Un Ctrl de verdad.** La tecla de arriba a la derecha es `KC_RIGHT_CTRL`, Ctrl
 real en los tres sistemas. Es la que usan el prefijo de Herdr, los chords
@@ -104,8 +102,8 @@ podido determinarlo. Las dos teclas modificadoras salen con un tono desplazado.
 ```
        Esc           1           2           3           4           5   ║            6           7           8           9           0   Ctrl-real
        Tab           Q           W           E           R           T   ║            Y           U           I           O           P       Enter
-     Shift           A           S           D           F           G   ║            H           J           K           L           ñ           ´
-      App★           Z           X           C           V           B   ║            N           M           ,           .           -       Shift
+      App★           A           S           D           F           G   ║            H           J           K           L           ñ           ´
+     Shift           Z           X           C           V           B   ║            N           M           ,           .           -       Shift
                                                       Retr        →NAV   ║         →SYM     Espacio
 ```
 
@@ -163,8 +161,7 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 
 | Antes | Ahora | Motivo |
 |---|---|---|
-| Bloq Mayús = `KC_LEFT_CTRL` | `Shift` | el meñique llega mejor a la fila de inicio que a la esquina |
-| Shift izquierdo en la esquina | `U_APP` | Cmd en mac, Ctrl en PC, y en la esquina que la mano ya conoce |
+| Bloq Mayús = `KC_LEFT_CTRL` | `U_APP` | Cmd en mac, Ctrl en PC |
 | Arriba dcha. = `KC_DELETE` | `KC_RIGHT_CTRL` | Delete sigue en NAV, y hacía falta un Ctrl real |
 | `ES_BSLS_MAC` | `U_BSLS` | escribía `¬` en Windows y Ubuntu |
 | Pestañas en NAV fila 4 (M y `,`) | NAV fila 2 (Q y W) | libera la fila 4 para ventanas y escritorios |
