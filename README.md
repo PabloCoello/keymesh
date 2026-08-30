@@ -49,10 +49,12 @@ El firmware detecta el sistema anfitrión (`OS_DETECTION_ENABLE`, disponible en
 la rama `firmware24` del fork de ZSA) y resuelve cada atajo en tiempo de
 ejecución. Hay tres piezas:
 
-**Un modificador de aplicación.** La tecla de Bloq Mayús es ahora `U_APP`:
-manda Cmd en macOS y Ctrl en Windows y Linux. Es la tecla de copiar, pegar,
-guardar, buscar. Su significado es el mismo en los tres sistemas aunque el
-código que envía cambie.
+**Un modificador de aplicación.** `U_APP` ocupa la esquina inferior izquierda,
+justo donde un teclado normal pone el Ctrl de copiar y pegar: manda Cmd en macOS
+y Ctrl en Windows y Linux. Es la tecla de copiar, pegar, guardar, buscar. Su
+significado es el mismo en los tres sistemas aunque el código que envía cambie.
+Shift sube a la posición de Bloq Mayús, que para el meñique es menos viaje que
+la esquina y se pulsa mucho más a menudo.
 
 **Un Ctrl de verdad.** La tecla de arriba a la derecha es `KC_RIGHT_CTRL`, Ctrl
 real en los tres sistemas. Es la que usan el prefijo de Herdr, los chords
@@ -102,8 +104,8 @@ podido determinarlo. Las dos teclas modificadoras salen con un tono desplazado.
 ```
        Esc           1           2           3           4           5   ║            6           7           8           9           0   Ctrl-real
        Tab           Q           W           E           R           T   ║            Y           U           I           O           P       Enter
-      App★           A           S           D           F           G   ║            H           J           K           L           ñ           ´
-     Shift           Z           X           C           V           B   ║            N           M           ,           .           -       Shift
+     Shift           A           S           D           F           G   ║            H           J           K           L           ñ           ´
+      App★           Z           X           C           V           B   ║            N           M           ,           .           -       Shift
                                                       Retr        →NAV   ║         →SYM     Espacio
 ```
 
@@ -120,7 +122,7 @@ podido determinarlo. Las dos teclas modificadoras salen con un tono desplazado.
 ### SYM
 
 ```
-         ·           ¡           ¿           '           ?           `   ║            €           "           %           $           _           ·
+         ·           ·           ·           ·           ·           `   ║            €           ·           ·           '           ¡           ·
          ·           |           @           #           ~           &   ║            +           -           /           *           º       Enter
          ·           {           [           (           <           =   ║         Vol−        Vol+        Mute        Play         Ant         Sig
          ·           }           ]           )           >           \   ║            ^           ¨           ;           :           ç           ·
@@ -161,7 +163,8 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 
 | Antes | Ahora | Motivo |
 |---|---|---|
-| Bloq Mayús = `KC_LEFT_CTRL` | `U_APP` | Cmd en mac, Ctrl en PC |
+| Bloq Mayús = `KC_LEFT_CTRL` | `Shift` | el meñique llega mejor a la fila de inicio que a la esquina |
+| Shift izquierdo en la esquina | `U_APP` | Cmd en mac, Ctrl en PC, y en la esquina que la mano ya conoce |
 | Arriba dcha. = `KC_DELETE` | `KC_RIGHT_CTRL` | Delete sigue en NAV, y hacía falta un Ctrl real |
 | `ES_BSLS_MAC` | `U_BSLS` | escribía `¬` en Windows y Ubuntu |
 | Pestañas en NAV fila 4 (M y `,`) | NAV fila 2 (Q y W) | libera la fila 4 para ventanas y escritorios |
@@ -169,15 +172,18 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 | `LCTL(KC_Z/X/C/V)` | `U_UNDO` / `U_CUT` / `U_COPY` / `U_PASTE` | en macOS usan Cmd |
 | `LCTL(ES_PLUS/ES_MINS)` | `U_ZIN` / `U_ZOUT` | igual |
 | `LALT(LGUI(LCTL(KC_4)))` | `U_SHOT` | enviaba Alt+Cmd+Ctrl+4, que no es la captura por defecto de macOS |
-| `!` y `?` duplicados en SYM | `€ " % $ _` | ya estaban en la mano izquierda de la misma capa |
+| `" % $ _` en SYM | fuera | son Shift+2, Shift+5, Shift+4 y Shift+`-`: se escriben con Shift desde la base |
+| `¡ ¿ ' ?` en la izquierda de SYM | `' ¡` en la derecha | dos teclas en vez de cuatro; con Shift dan `?` y `¿` |
+| La chuleta no decía de dónde sale `! " $ % & ( ) =` | línea `⇧` bajo cada tecla | al vaciar SYM tenían que verse en alguna parte |
 | Fila 4 derecha de SYM vacía | `^ ¨ ; : ç` | `¨` hace falta para ü |
 | `TAPPING_TOGGLE` 5 (por defecto) | 1 | un toque fija la capa, otro la quita; mantener sigue dando momentánea |
 | LEDs uniformes por capa | por tecla, y color según el host | las capas se aprenden mirándolas |
 | 3 capas | 4, la nueva por tri-layer | Herdr y control del sistema |
 
-Lo que **no** cambia: toda la mano izquierda de SYM (delimitadores y símbolos de
-programación), la disposición de flechas en NAV, el cluster de modificadores en
-la fila de inicio de NAV, y todas las letras y dígitos de la capa base.
+Lo que **no** cambia: las tres filas de abajo de la mano izquierda de SYM
+(delimitadores y símbolos de programación), la disposición de flechas en NAV, el
+cluster de modificadores en la fila de inicio de NAV, y todas las letras y
+dígitos de la capa base.
 
 Un detalle: las pestañas siguen siendo `LCTL(KC_TAB)`, sin condicional. Ctrl+Tab
 funciona igual en Chrome, Brave y Safari en los tres sistemas. El bug era el
