@@ -67,7 +67,7 @@ CHORDS = {
     "U_DISPR":  ("Ctrl Opt Cmd →", "Win ⇧ →", "⇧ Super →"),
     "U_ZIN":    ("Cmd +", "Ctrl +", "Ctrl +"),
     "U_ZOUT":   ("Cmd −", "Ctrl −", "Ctrl −"),
-    "U_SHOT":   ("Cmd ⇧ 4", "Win ⇧ S", "⇧ ImprPant"),
+    "U_SHOT":   ("Cmd ⇧ 4", "Win ⇧ S", "ImprPant"),
     "U_BSLS":   ("AltGr 6", "AltGr º", "AltGr º"),
     "U_APPSW":  ("Cmd Tab sostenido", "Alt Tab sostenido", "Alt Tab sostenido"),
 }

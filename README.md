@@ -73,7 +73,7 @@ sino un chord distinto, hay un keycode propio que se resuelve por sistema:
 | Siguiente ventana de la app | Cmd+º | Alt+Tab | Alt+º |
 | Exposé / Task View | Ctrl+↑ | Win+Tab | Super |
 | Mover a la otra pantalla | Ctrl+Opt+Cmd+←/→ | Win+Shift+←/→ | Shift+Super+←/→ |
-| Captura de región | Cmd+Shift+4 | Win+Shift+S | Shift+ImprPant |
+| Captura de región | Cmd+Shift+4 | Win+Shift+S | ImprPant |
 | Backslash | AltGr+6 | AltGr+º | AltGr+º |
 
 El caso de Inicio/Fin es el que más se nota al escribir: en macOS, Home y End

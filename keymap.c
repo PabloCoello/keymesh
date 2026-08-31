@@ -139,7 +139,10 @@ static uint16_t os_chord(uint16_t keycode) {
         case U_SHOT:
             if (mac) return LGUI(LSFT(KC_4));
             if (win) return LGUI(LSFT(KC_S));
-            return LSFT(KC_PSCR);
+            // En GNOME la captura de región es ImprPant a secas: abre el
+            // selector. Shift+ImprPant es la captura instantánea de la
+            // pantalla entera, sin selección ni edición.
+            return KC_PSCR;
         case U_BSLS:  return mac ? ES_BSLS_MAC       : ES_BSLS_PC;
 
         // --- Herdr: ctrl+alt, idéntico en los tres sistemas ---
