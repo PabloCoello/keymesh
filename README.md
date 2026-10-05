@@ -174,7 +174,7 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 | La chuleta no decía de dónde sale `! " $ % & ( ) =` | línea `⇧` bajo cada tecla | al vaciar SYM tenían que verse en alguna parte |
 | Fila 4 derecha de SYM vacía | `^ ¨ ; : ç` | `¨` hace falta para ü |
 | `TAPPING_TOGGLE` 5 (por defecto) | 1 | un toque fija la capa, otro la quita; mantener sigue dando momentánea |
-| LEDs uniformes por capa | por tecla, y color según el host | las capas se aprenden mirándolas |
+| LEDs uniformes por capa | base según el host; NAV, SYM y META planas con dos teclas de referencia en otro color | se sabe en qué capa estás y dónde poner los dedos |
 | 3 capas | 4, la nueva por tri-layer | Herdr y control del sistema |
 
 Lo que **no** cambia: las tres filas de abajo de la mano izquierda de SYM
