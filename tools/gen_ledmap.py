@@ -64,21 +64,21 @@ OFF = (0, 0, 0)
 LETTER   = (0, 190, 150)    # h se suma a base_hue() en la capa BASE
 MODSHIFT = (96, 255, 230)   # teclas cuyo significado depende del host
 
-NAV_MOVE  = (140, 255, 200)   # flechas y saltos de texto
-NAV_EDIT  = (85, 255, 190)    # deshacer, copiar, pegar
-NAV_FN    = (0, 0, 120)       # teclas de función
-NAV_WIN   = (20, 255, 220)    # ventanas, escritorios, aplicaciones
-NAV_MOD   = (190, 200, 170)   # cluster de modificadores
+# Las capas a las que se llega con los pulgares son planas: un color para toda
+# la capa y otro para dos teclas de referencia, una por mano, que sirven para
+# situar los dedos sin mirar la chuleta.
+NAV_FLAT   = (140, 255, 200)
+NAV_MARK   = (12, 255, 230)
+SYM_FLAT   = (35, 255, 195)
+SYM_MARK   = (163, 255, 230)
+META_FLAT  = (170, 255, 200)
+META_MARK  = (42, 255, 230)
 
-SYM_LEFT  = (35, 255, 195)    # delimitadores y símbolos de programación
-SYM_RIGHT = (10, 220, 195)    # operadores y puntuación
-SYM_MEDIA = (215, 220, 185)   # volumen y reproducción
-
-META_SYS  = (0, 255, 200)     # arranque, EEPROM
-META_OS   = (128, 255, 210)   # selección de host
-META_RGB  = (43, 255, 175)    # LEDs
-META_HRD  = (170, 255, 215)   # Herdr
-META_WIN  = (20, 255, 220)    # mover ventanas entre pantallas
+MARKS = {
+    "L_NAV":  (("KC_LEFT_GUI", "KC_DELETE"), NAV_FLAT, NAV_MARK),
+    "L_SYM":  (("ES_AT", "ES_SLSH"), SYM_FLAT, SYM_MARK),
+    "L_META": (("QK_BOOT", "HRD_CLOSE"), META_FLAT, META_MARK),
+}
 
 
 def is_blank(k):
@@ -91,44 +91,34 @@ def color_base(k):
     return LETTER
 
 
-def color_nav(k):
-    if k.startswith("KC_F") and k[4:].isdigit():
-        return NAV_FN
-    if k in ("KC_LEFT_GUI", "KC_LEFT_ALT", "KC_LEFT_CTRL", "KC_LEFT_SHIFT", "KC_RIGHT_ALT"):
-        return NAV_MOD
-    if k in ("U_APPSW", "U_WINN", "U_DESKL", "U_DESKR", "U_MSN"):
-        return NAV_WIN
-    if k in ("U_UNDO", "U_REDO", "U_CUT", "U_COPY", "U_PASTE", "U_ZIN", "U_ZOUT", "U_SHOT"):
-        return NAV_EDIT
-    if k.startswith("LCTL("):
-        return NAV_EDIT
-    return NAV_MOVE
+def color_flat(name, k):
+    marks, flat, mark = MARKS[name]
+    return mark if k in marks else flat
 
 
-def color_sym(idx, k):
-    if k.startswith("KC_AUDIO") or k.startswith("KC_MEDIA"):
-        return SYM_MEDIA
-    col = idx % 12 if idx < 48 else 0
-    return SYM_LEFT if col < 6 else SYM_RIGHT
+def is_left(idx):
+    return idx % 12 < 6 if idx < 48 else idx < 50
 
 
-def color_meta(k):
-    if k.startswith("HRD_"):
-        return META_HRD
-    if k.startswith("U_DISP"):
-        return META_WIN
-    if k.startswith("U_OS"):
-        return META_OS
-    if k.startswith("RGB_") or k.startswith("RM_") or k == "TOGGLE_LAYER_COLOR":
-        return META_RGB
-    if k in ("QK_BOOT", "EE_CLR"):
-        return META_SYS
-    return (0, 0, 140)
+# Cada capa de MARKS tiene que existir, y cada tecla de referencia (izquierda,
+# derecha) aparecer una sola vez y en su mano. Si no, el resalte se perdería o
+# se iría de lado sin avisar.
+layer_keys = dict(layers)
+for name, (marks, _, _) in MARKS.items():
+    if name not in layer_keys:
+        sys.exit(f"{name}: la capa de MARKS no existe en keymap.c")
+    keys = layer_keys[name]
+    for k, left in zip(marks, (True, False)):
+        n = keys.count(k)
+        if n != 1:
+            sys.exit(f"{name}: la tecla de referencia {k} aparece {n} veces")
+        if is_left(keys.index(k)) != left:
+            sys.exit(f"{name}: la tecla de referencia {k} no está en la mano esperada")
 
 
 out = []
 out.append("// GENERADO por gen_ledmap.py. No editar a mano.")
-out.append("// Cada capa ilumina solo las teclas que hace algo. En la capa BASE el")
+out.append("// Cada capa ilumina solo las teclas que hacen algo. En la capa BASE el")
 out.append("// campo de tono se SUMA a base_hue(), que depende del host detectado.")
 out.append("//")
 out.append("// Las entradas van en orden de INDICE DE LED, que no es el de")
@@ -144,12 +134,8 @@ for name, keys in layers:
             c = OFF
         elif name == "L_BASE":
             c = color_base(k)
-        elif name == "L_NAV":
-            c = color_nav(k)
-        elif name == "L_SYM":
-            c = color_sym(idx, k)
         else:
-            c = color_meta(k)
+            c = color_flat(name, k)
         rows.append(c)
     # rows va en orden de keymap; el firmware indexa por LED. Ver led_order.py.
     body = ", ".join("{%d,%d,%d}" % c for c in to_led_order(rows))

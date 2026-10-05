@@ -17,7 +17,7 @@ LEDMAP = os.path.join(ROOT, "ledmap.h")
 DST = os.path.join(ROOT, "chuleta.html")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from labels import LAYER_TITLES, LABELS, CHORDS, HERDR, SUBS
+from labels import LAYER_TITLES, LABELS, CHORDS, HERDR, SUBS, SHIFTED
 from led_order import to_key_order
 
 # Tonos base por sistema, replicando base_hue() de keymap.c
@@ -135,6 +135,8 @@ for name, keys in layers:
             key["sub"] = HERDR[k][1]
         elif k in SUBS:
             key["sub"] = SUBS[k]
+        elif k in SHIFTED:
+            key["sub"] = "\u21e7 " + SHIFTED[k]
         entry["keys"].append(key)
     model["layers"].append(entry)
 
@@ -279,6 +281,10 @@ html = f"""<!DOCTYPE html>
   <main id="layers"></main>
 
   <footer>
+    <p>La línea pequeña con <code>\u21e7</code> es lo que escribe esa tecla con Shift. La fila
+    de números no duplica sus símbolos en Sym: <code>! " $ % &amp; ( ) =</code> se sacan con
+    Shift, como en cualquier teclado. Shift da lo mismo en el español de PC y en el de
+    macOS, así que esa línea no cambia al conmutar de sistema.</p>
     <p>Meta se enciende cuando Nav y Sym están activas a la vez: toca una y luego
     la otra, o mantén los dos pulgares. Para salir del todo hay que apagar las dos.</p>
     <p><code>OS info</code> escribe el sistema detectado. Si no acierta tras conmutar el

@@ -73,7 +73,7 @@ sino un chord distinto, hay un keycode propio que se resuelve por sistema:
 | Siguiente ventana de la app | Cmd+º | Alt+Tab | Alt+º |
 | Exposé / Task View | Ctrl+↑ | Win+Tab | Super |
 | Mover a la otra pantalla | Ctrl+Opt+Cmd+←/→ | Win+Shift+←/→ | Shift+Super+←/→ |
-| Captura de región | Cmd+Shift+4 | Win+Shift+S | Shift+ImprPant |
+| Captura de región | Cmd+Shift+4 | Win+Shift+S | ImprPant |
 | Backslash | AltGr+6 | AltGr+º | AltGr+º |
 
 El caso de Inicio/Fin es el que más se nota al escribir: en macOS, Home y End
@@ -120,7 +120,7 @@ podido determinarlo. Las dos teclas modificadoras salen con un tono desplazado.
 ### SYM
 
 ```
-         ·           ¡           ¿           '           ?           `   ║            €           "           %           $           _           ·
+         ·           ·           ·           ¿           ?           `   ║            €           ·           ·           '           ¡           ·
          ·           |           @           #           ~           &   ║            +           -           /           *           º       Enter
          ·           {           [           (           <           =   ║         Vol−        Vol+        Mute        Play         Ant         Sig
          ·           }           ]           )           >           \   ║            ^           ¨           ;           :           ç           ·
@@ -169,15 +169,18 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 | `LCTL(KC_Z/X/C/V)` | `U_UNDO` / `U_CUT` / `U_COPY` / `U_PASTE` | en macOS usan Cmd |
 | `LCTL(ES_PLUS/ES_MINS)` | `U_ZIN` / `U_ZOUT` | igual |
 | `LALT(LGUI(LCTL(KC_4)))` | `U_SHOT` | enviaba Alt+Cmd+Ctrl+4, que no es la captura por defecto de macOS |
-| `!` y `?` duplicados en SYM | `€ " % $ _` | ya estaban en la mano izquierda de la misma capa |
+| `" % $ _` en SYM | fuera | son Shift+2, Shift+5, Shift+4 y Shift+`-`: se escriben con Shift desde la base |
+| `¡ ¿ ' ?` en la izquierda de SYM | `' ¡` en la derecha; `¿ ?` en la fila 1 izquierda, sin Shift | `?` y `¿` son demasiado frecuentes para Sym + Shift + tecla |
+| La chuleta no decía de dónde sale `! " $ % & ( ) =` | línea `⇧` bajo cada tecla | al vaciar SYM tenían que verse en alguna parte |
 | Fila 4 derecha de SYM vacía | `^ ¨ ; : ç` | `¨` hace falta para ü |
 | `TAPPING_TOGGLE` 5 (por defecto) | 1 | un toque fija la capa, otro la quita; mantener sigue dando momentánea |
-| LEDs uniformes por capa | por tecla, y color según el host | las capas se aprenden mirándolas |
+| LEDs uniformes por capa | base según el host; NAV, SYM y META planas con dos teclas de referencia en otro color | se sabe en qué capa estás y dónde poner los dedos |
 | 3 capas | 4, la nueva por tri-layer | Herdr y control del sistema |
 
-Lo que **no** cambia: toda la mano izquierda de SYM (delimitadores y símbolos de
-programación), la disposición de flechas en NAV, el cluster de modificadores en
-la fila de inicio de NAV, y todas las letras y dígitos de la capa base.
+Lo que **no** cambia: las tres filas de abajo de la mano izquierda de SYM
+(delimitadores y símbolos de programación), la disposición de flechas en NAV, el
+cluster de modificadores en la fila de inicio de NAV, y todas las letras y
+dígitos de la capa base.
 
 Un detalle: las pestañas siguen siendo `LCTL(KC_TAB)`, sin condicional. Ctrl+Tab
 funciona igual en Chrome, Brave y Safari en los tres sistemas. El bug era el
@@ -187,46 +190,92 @@ swap, no la tecla.
 
 ## 6. Compilar y flashear
 
-### Montar el entorno en macOS
+### Montar el entorno
 
-Tres avisos que cuestan una tarde si los descubres por tu cuenta.
+Tres avisos que cuestan una tarde si los descubres por tu cuenta. Valen para los
+tres sistemas; los comandos concretos van después, uno por sistema.
 
-**El CLI de QMK tiene que correr sobre Python 3.11.** Los scripts de build de
-`firmware24` usan `ast.Num`, que Python eliminó en la 3.12. Con una versión más
-nueva la compilación muere en `Platform not defined` tras un
+**El CLI de QMK tiene que correr sobre Python 3.11.** `lib/python/qmk/math.py`
+usa `ast.Num`, que Python eliminó en la 3.12. Con una versión más nueva la
+compilación muere en `Platform not defined` tras un
 `AttributeError: module 'ast' has no attribute 'Num'`, que no dice nada útil.
+
+**El toolchain de ARM va con la versión fija.** Se usa el prebuilt oficial de
+Arm 13.3.rel1 y no el del gestor de paquetes de cada sistema: un toolchain
+distinto produce un binario distinto, y con firmware conviene que eso sea una
+decisión y no un efecto de lo que haya en el disco. Además trae newlib, que es
+lo que le falta al `arm-none-eabi-gcc` de Homebrew; sin ella no encuentra
+`stdint.h` y la compilación muere en el primer fichero de ChibiOS.
+
+El `Makefile` lo antepone al PATH si lo encuentra bajo `~/toolchains`. Compone
+el nombre del directorio con `uname`, porque Arm publica un tarball por host:
+`darwin-arm64` en el Mac y `x86_64` en Ubuntu. Para usar otra versión,
+descomprímela al lado y pásala por variable:
+
+    make compile ARM_TOOLCHAIN=$HOME/toolchains/<otra-version>/bin
+
+Si te quedas con la nueva, cambia `ARM_VERSION` en el `Makefile` y anótala aquí.
+
+**`qmk doctor` se queja de AVR.** Falta `avr-gcc`, `avrdude` y compañía, y lo
+marca como problema grave. El Voyager es ARM (STM32F303): no aplica.
+
+#### macOS
 
     brew install python@3.11 hidapi dfu-util
     pipx install --python /opt/homebrew/opt/python@3.11/bin/python3.11 qmk
     qmk setup -b firmware24 -y zsa/qmk_firmware
     pipx inject qmk -r ~/qmk_firmware/requirements.txt
 
+    mkdir -p ~/toolchains && cd ~/toolchains
+    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+    tar -xf arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+
 Se instala el CLI con `pipx` y no con `brew install qmk/qmk/qmk` porque la
 fórmula del tap de QMK arrastra `arm-none-eabi-gcc@8` desde `osx-cross/arm`, un
 segundo tap de terceros. `hidapi` lo necesita el módulo `hid` de Python;
 `dfu-util` es lo que flashea el Voyager.
 
-**El `arm-none-eabi-gcc` de Homebrew no sirve.** Es solo el compilador, sin
-newlib, así que no encuentra `stdint.h` y la compilación muere en el primer
-fichero de ChibiOS. En Homebrew no hay newlib por separado. Usa el prebuilt
-oficial de Arm, que sí la trae:
+#### Ubuntu
+
+Comprobado en Ubuntu 24.04 sobre x86_64.
+
+    sudo apt install dfu-util
+
+    uv python install 3.11
+    pipx install --python "$(uv python find 3.11)" qmk
+
+    git clone --recurse-submodules -b firmware24 \
+      https://github.com/zsa/qmk_firmware.git ~/qmk_firmware
+    qmk config user.qmk_home=$HOME/qmk_firmware
+    pipx inject qmk $(grep -vE '^\s*#|^\s*$' ~/qmk_firmware/requirements.txt | tr '\n' ' ')
 
     mkdir -p ~/toolchains && cd ~/toolchains
-    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
-    tar -xf arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.tar.xz
+    curl -fLO https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
+    tar -xf arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz
 
-El `Makefile` lo antepone al PATH si está en esa ruta. La versión va fija a
-propósito: un toolchain distinto produce un binario distinto, y con firmware
-conviene que eso sea una decisión y no un efecto de lo que haya en el disco.
-Para usar otro, descomprímelo al lado y pásalo por variable:
+Cuatro diferencias con macOS, todas de empaquetado:
 
-    make compile ARM_TOOLCHAIN=$HOME/toolchains/<otra-version>/bin
+- Ubuntu 24.04 no trae Python 3.11, solo el 3.12 del sistema. Arriba se coge
+  con `uv`, que no pide sudo; el PPA `deadsnakes` sirve igual.
+- `pipx inject -r` no existe hasta pipx 1.5 y Ubuntu 24.04 empaqueta la 1.4.3,
+  que solo acepta la lista de paquetes en línea. De ahí el `grep`.
+- `dfu-util` hace falta para compilar, no solo para flashear. El paquete trae
+  `dfu-suffix`, y `builddefs/common_rules.mk` lo llama al generar el `.bin`
+  porque `keyboards/zsa/voyager/rules.mk` define `DFU_SUFFIX_ARGS`. Sin él el
+  firmware enlaza y luego muere con `dfu-suffix: not found`.
+- En vez de `qmk setup` basta clonar el fork y apuntar `user.qmk_home`.
 
-Si te quedas con el nuevo, cambia el valor por defecto de `ARM_TOOLCHAIN` en el
-`Makefile` y anota aquí la versión.
+Para flashear hacen falta además las reglas de udev de ZSA. Las de QMK
+(`util/udev/50-qmk.rules`) no sirven: cubren el DFU genérico de STM32
+(`0483:df11`), y el bootloader del Voyager es `3297:0791`, como se ve en el
+`DFU_ARGS` de `keyboards/zsa/voyager/rules.mk`. Copia el bloque del
+[wiki de ZSA](https://github.com/zsa/wally/wiki/Linux-install) a
+`/etc/udev/rules.d/50-zsa.rules` y recarga:
 
-**`qmk doctor` se queja de AVR.** Falta `avr-gcc`, `avrdude` y compañía, y lo
-marca como problema grave. El Voyager es ARM (STM32F303): no aplica.
+    sudo udevadm control --reload-rules && sudo udevadm trigger
+
+Tienes que estar en el grupo `plugdev`. Compruébalo con `id -nG`; si no
+aparece, `sudo usermod -aG plugdev $USER` y vuelve a iniciar sesión.
 
 ### El bucle de trabajo
 
@@ -273,7 +322,11 @@ La compilación real también está hecha, contra la rama `firmware24` del fork 
 ZSA con el toolchain de Arm 13.3.rel1: enlaza sin un solo aviso y produce un
 binario de 54 478 bytes en la revisión en que se escribió esto. Es decir, todos
 los keycodes del keymap existen de verdad en esa rama, no solo en los stubs; el
-tamaño se mueve en cuanto tocas el keymap y no es un valor a defender. Lo que sigue sin verificar es el
+tamaño se mueve en cuanto tocas el keymap y no es un valor a defender.
+
+Repetida después en Ubuntu 24.04 sobre x86_64, con la misma rama y la misma
+versión del toolchain: enlaza igual de limpia y da 54 472 bytes, más los 16 del
+sufijo DFU que añade `dfu-suffix`. Lo que sigue sin verificar es el
 comportamiento en hardware: para eso está el protocolo de la sección 9.
 
 Aviso: en `firmware24` los keycodes `RGB_TOG`, `RGB_MOD`, `RGB_HUI` y compañía
@@ -309,6 +362,29 @@ Shift+Super+←/→ es mover la ventana de monitor. GNOME ha cambiado estos
 valores por defecto entre versiones. Herdr documenta que Ctrl+Alt+flechas está
 ocupado por el cambio de espacio de trabajo en GNOME y que Ctrl+Alt+T abre un
 terminal en Ubuntu: el keymap no usa ninguno de los dos.
+
+Mira también las extensiones de GNOME Shell, no solo los atajos del sistema. La
+extensión gTile ata por defecto las cuatro teclas de foco de panel de Herdr:
+
+    action-contract-left    ['<Ctrl><Alt>h']
+    action-contract-bottom  ['<Ctrl><Alt>j']
+    action-contract-top     ['<Ctrl><Alt>k']
+    action-contract-right   ['<Ctrl><Alt>l']
+
+El síntoma es que `H:left` y compañía encogen la ventana del terminal en vez de
+mover el foco de panel. Se arregla vaciando esas cuatro:
+
+    d=~/.local/share/gnome-shell/extensions/gTile@vibou/schemas
+    for k in left right top bottom; do
+      GSETTINGS_SCHEMA_DIR="$d" \
+        gsettings set org.gnome.shell.extensions.gtile action-contract-$k "[]"
+    done
+
+Cómo buscar estas colisiones, porque cuesta: `gsettings list-recursively` no
+lista los esquemas de las extensiones, que viven fuera de la ruta por defecto, y
+`dconf dump` solo guarda lo que se aparta del valor por defecto. Una extensión
+con su atajo sin tocar es invisible para las dos herramientas. Hay que leer el
+`.gschema.xml` de la extensión.
 
 **Windows.** No hay que tocar nada.
 
@@ -346,7 +422,7 @@ problemas de portabilidad.
 
 **Símbolos.** Abre un editor de texto plano y teclea desde la capa SYM:
 
-    \ | @ # ~ { } [ ] < > º ç ¡ ¿ € ^ ¨ ' " % $ _ + - / * = & ; :
+    \ | @ # ~ { } [ ] < > º ç ¡ ¿ ? ` € ^ ¨ ' + - / * = & ; :
 
 Todos deben salir correctos. Los candidatos a fallar son `\`, `{`, `}`, `[`,
 `]`, `@`, `#` y `~`, porque dependen de AltGr y el layout español de macOS no

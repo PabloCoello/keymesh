@@ -38,3 +38,8 @@ detach           = ["prefix+q", "ctrl+alt+q"]
 #
 # Tampoco se usa ninguna combinación ctrl+alt+flecha (GNOME las usa para
 # cambiar de espacio de trabajo) ni ctrl+alt+t (abrir terminal en Ubuntu).
+#
+# En Ubuntu, comprobado en la máquina: la extensión gTile ata ctrl+alt+h/j/k/l a
+# sus acciones action-contract-*, y GNOME Shell las captura antes de que lleguen
+# al terminal. Si el foco de panel encoge la ventana en vez de moverse, es eso.
+# La sección 7 del README lleva el arreglo.

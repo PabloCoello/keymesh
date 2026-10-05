@@ -67,7 +67,7 @@ CHORDS = {
     "U_DISPR":  ("Ctrl Opt Cmd →", "Win ⇧ →", "⇧ Super →"),
     "U_ZIN":    ("Cmd +", "Ctrl +", "Ctrl +"),
     "U_ZOUT":   ("Cmd −", "Ctrl −", "Ctrl −"),
-    "U_SHOT":   ("Cmd ⇧ 4", "Win ⇧ S", "⇧ ImprPant"),
+    "U_SHOT":   ("Cmd ⇧ 4", "Win ⇧ S", "ImprPant"),
     "U_BSLS":   ("AltGr 6", "AltGr º", "AltGr º"),
     "U_APPSW":  ("Cmd Tab sostenido", "Alt Tab sostenido", "Alt Tab sostenido"),
 }
@@ -95,4 +95,19 @@ HERDR = {
 SUBS = {
     "TT(L_NAV)": "toque fija",
     "TT(L_SYM)": "toque fija",
+}
+
+# Lo que escribe cada tecla al pulsarla con Shift, para las que producen un
+# símbolo distinto y no solo la mayúscula. Es la mitad del layout que no se ve
+# en ninguna capa: la fila de números no duplica sus símbolos en Sym, así que
+# sin esto la chuleta no dice de dónde salen ! " $ % & / ( ) =.
+#
+# El resultado de Shift es el mismo en el español ISO de PC y en el de macOS,
+# a diferencia de la capa de AltGr. Por eso esta tabla no depende del host.
+SHIFTED = {
+    "KC_1": "!", "KC_2": '"', "KC_3": "·", "KC_4": "$", "KC_5": "%",
+    "KC_6": "&", "KC_7": "/", "KC_8": "(", "KC_9": ")", "KC_0": "=",
+    "ES_MINS": "_", "KC_COMMA": ";", "KC_DOT": ":", "ES_ACUT": "¨",
+    "ES_QUOT": "?", "ES_IEXL": "¿", "ES_GRV": "^", "ES_MORD": "ª",
+    "ES_PLUS": "*", "ES_LABK": ">",
 }

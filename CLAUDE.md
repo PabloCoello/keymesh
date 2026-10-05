@@ -37,20 +37,28 @@ macOS aunque el chord que envía sea distinto.
 
 ### Entorno de compilación
 
-`make compile` y `make flash` necesitan dos cosas fuera de lo obvio, ambas ya
-resueltas en esta máquina y documentadas en la sección 6 del README:
+`make compile` y `make flash` necesitan tres cosas fuera de lo obvio, todas
+documentadas en la sección 6 del README:
 
-- **El CLI de QMK tiene que correr sobre Python 3.11.** Los scripts de build de
-  `firmware24` usan `ast.Num`, eliminado en Python 3.12. El síntoma es
+- **El CLI de QMK tiene que correr sobre Python 3.11.** `lib/python/qmk/math.py`
+  de `firmware24` usa `ast.Num`, eliminado en Python 3.12. El síntoma es
   `Platform not defined` precedido de un `AttributeError` sobre `ast`, que no
   apunta a la causa.
-- **El `arm-none-eabi-gcc` de Homebrew no sirve**: es el compilador sin newlib,
-  así que no encuentra `stdint.h`. Se usa el prebuilt oficial de Arm en
-  `~/toolchains/`, y el `Makefile` lo antepone al PATH mediante
-  `ARM_TOOLCHAIN`.
+- **El toolchain de ARM es el prebuilt oficial de Arm en `~/toolchains/`**, con
+  la versión fija en `ARM_VERSION`. El `Makefile` lo antepone al PATH y compone
+  el nombre del directorio con `uname`, porque Arm publica un tarball por host:
+  `darwin-arm64` y `x86_64`. El `arm-none-eabi-gcc` de Homebrew no vale, viene
+  sin newlib y no encuentra `stdint.h`.
+- **`dfu-util` hace falta ya para compilar**, no solo para flashear. El paquete
+  trae `dfu-suffix`, y la regla del `.bin` en `builddefs/common_rules.mk` lo
+  llama porque el `rules.mk` del Voyager define `DFU_SUFFIX_ARGS`.
 
-Los avisos de `qmk doctor` sobre `avr-gcc`, `avrdude`, `dfu-programmer` y
-`dfu-util` no aplican: el Voyager es ARM.
+En Ubuntu, `qmk flash` necesita además las reglas de udev de ZSA en
+`/etc/udev/rules.d/50-zsa.rules`. Las de QMK no sirven: cubren el DFU genérico
+de STM32 (`0483:df11`) y el bootloader del Voyager es `3297:0791`.
+
+Los avisos de `qmk doctor` sobre `avr-gcc`, `avrdude` y `dfu-programmer` no
+aplican: el Voyager es ARM.
 
 ## Ficheros generados: no editar a mano
 

@@ -17,11 +17,21 @@ CC       ?= cc
 DEST      = $(QMK)/keyboards/$(KB)/keymaps/$(KM)
 SOURCES   = keymap.c config.h rules.mk i18n.h ledmap.h
 
-# El arm-none-eabi-gcc de Homebrew viene sin newlib, asi que no encuentra
-# stdint.h y la compilacion muere en el primer fichero de ChibiOS. Se usa el
-# prebuilt oficial de Arm, que si lo trae. Si esta donde lo deja la instalacion
-# descrita en el README, se antepone al PATH; si no, se usa lo que haya.
-ARM_TOOLCHAIN ?= $(HOME)/toolchains/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi/bin
+# Se usa el prebuilt oficial de Arm con la version fija, para que el binario no
+# dependa de lo que haya en el disco de cada maquina. Ademas trae newlib, que es
+# justo lo que le falta al arm-none-eabi-gcc de Homebrew: sin ella no encuentra
+# stdint.h y la compilacion muere en el primer fichero de ChibiOS. Si esta donde
+# lo deja la instalacion descrita en el README, se antepone al PATH; si no, se
+# usa lo que haya. El nombre del directorio lleva el host, asi que se compone.
+ARM_VERSION ?= 13.3.rel1
+UNAME_S     := $(shell uname -s)
+UNAME_M     := $(shell uname -m)
+ifeq ($(UNAME_S),Darwin)
+ARM_HOST ?= darwin-$(UNAME_M)
+else
+ARM_HOST ?= $(UNAME_M)
+endif
+ARM_TOOLCHAIN ?= $(HOME)/toolchains/arm-gnu-toolchain-$(ARM_VERSION)-$(ARM_HOST)-arm-none-eabi/bin
 ifneq ($(wildcard $(ARM_TOOLCHAIN)),)
 export PATH := $(ARM_TOOLCHAIN):$(PATH)
 endif
