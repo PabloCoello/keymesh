@@ -195,10 +195,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   // SYM. Los símbolos de Shift+número no viven aquí: se escriben con Shift
   // desde la base, como en un teclado normal. Aquí está lo que la base no tiene:
-  // AltGr, delimitadores y las dos teclas a la derecha del cero (' y ¡), que con
-  // Shift dan ? y ¿. La fila 1 queda casi vacía a propósito.
+  // AltGr, delimitadores y las dos teclas a la derecha del cero (' y ¡). ? y ¿
+  // también salen con Shift desde ' y ¡, pero tienen tecla propia en la mano
+  // izquierda: se usan demasiado para pedir tres teclas a la vez.
   [L_SYM] = LAYOUT_voyager(
-    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, ES_GRV,                                         ES_EURO,        KC_TRANSPARENT, KC_TRANSPARENT, ES_QUOT,        ES_IEXL,        KC_TRANSPARENT,
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, ES_IQUE,        ES_QUES,        ES_GRV,                                         ES_EURO,        KC_TRANSPARENT, KC_TRANSPARENT, ES_QUOT,        ES_IEXL,        KC_TRANSPARENT,
     KC_TRANSPARENT, ES_PIPE,        ES_AT,          ES_HASH,        ES_TILD,        ES_AMPR,                                        ES_PLUS,        ES_MINS,        ES_SLSH,        ES_ASTR,        ES_MORD,        KC_ENTER,
     KC_TRANSPARENT, ES_LCBR,        ES_LBRC,        ES_LPRN,        ES_LABK,        ES_EQL,                                         KC_AUDIO_VOL_DOWN,KC_AUDIO_VOL_UP,KC_AUDIO_MUTE, KC_MEDIA_PLAY_PAUSE,KC_MEDIA_PREV_TRACK,KC_MEDIA_NEXT_TRACK,
     KC_TRANSPARENT, ES_RCBR,        ES_RBRC,        ES_RPRN,        ES_RABK,        U_BSLS,                                         ES_CIRC,        ES_DIAE,        ES_SCLN,        ES_COLN,        ES_CCED,        KC_TRANSPARENT,

@@ -170,7 +170,7 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 | `LCTL(ES_PLUS/ES_MINS)` | `U_ZIN` / `U_ZOUT` | igual |
 | `LALT(LGUI(LCTL(KC_4)))` | `U_SHOT` | enviaba Alt+Cmd+Ctrl+4, que no es la captura por defecto de macOS |
 | `" % $ _` en SYM | fuera | son Shift+2, Shift+5, Shift+4 y Shift+`-`: se escriben con Shift desde la base |
-| `¡ ¿ ' ?` en la izquierda de SYM | `' ¡` en la derecha | dos teclas en vez de cuatro; con Shift dan `?` y `¿` |
+| `¡ ¿ ' ?` en la izquierda de SYM | `' ¡` en la derecha; `¿ ?` siguen en la izquierda | `?` y `¿` son demasiado frecuentes para Sym + Shift + tecla |
 | La chuleta no decía de dónde sale `! " $ % & ( ) =` | línea `⇧` bajo cada tecla | al vaciar SYM tenían que verse en alguna parte |
 | Fila 4 derecha de SYM vacía | `^ ¨ ; : ç` | `¨` hace falta para ü |
 | `TAPPING_TOGGLE` 5 (por defecto) | 1 | un toque fija la capa, otro la quita; mantener sigue dando momentánea |
