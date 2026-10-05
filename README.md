@@ -120,7 +120,7 @@ podido determinarlo. Las dos teclas modificadoras salen con un tono desplazado.
 ### SYM
 
 ```
-         ·           ·           ·           ·           ·           `   ║            €           ·           ·           '           ¡           ·
+         ·           ·           ·           ¿           ?           `   ║            €           ·           ·           '           ¡           ·
          ·           |           @           #           ~           &   ║            +           -           /           *           º       Enter
          ·           {           [           (           <           =   ║         Vol−        Vol+        Mute        Play         Ant         Sig
          ·           }           ]           )           >           \   ║            ^           ¨           ;           :           ç           ·

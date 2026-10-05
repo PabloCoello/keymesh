@@ -1,5 +1,5 @@
 // GENERADO por gen_ledmap.py. No editar a mano.
-// Cada capa ilumina solo las teclas que hace algo. En la capa BASE el
+// Cada capa ilumina solo las teclas que hacen algo. En la capa BASE el
 // campo de tono se SUMA a base_hue(), que depende del host detectado.
 //
 // Las entradas van en orden de INDICE DE LED, que no es el de

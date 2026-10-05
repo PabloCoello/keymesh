@@ -75,9 +75,9 @@ META_FLAT  = (170, 255, 200)
 META_MARK  = (42, 255, 230)
 
 MARKS = {
-    "L_NAV":  ({"KC_LEFT_GUI", "KC_DELETE"}, NAV_FLAT, NAV_MARK),
-    "L_SYM":  ({"ES_AT", "ES_SLSH"}, SYM_FLAT, SYM_MARK),
-    "L_META": ({"QK_BOOT", "HRD_CLOSE"}, META_FLAT, META_MARK),
+    "L_NAV":  (("KC_LEFT_GUI", "KC_DELETE"), NAV_FLAT, NAV_MARK),
+    "L_SYM":  (("ES_AT", "ES_SLSH"), SYM_FLAT, SYM_MARK),
+    "L_META": (("QK_BOOT", "HRD_CLOSE"), META_FLAT, META_MARK),
 }
 
 
@@ -96,19 +96,29 @@ def color_flat(name, k):
     return mark if k in marks else flat
 
 
-# Cada tecla de referencia tiene que existir exactamente una vez en su capa. Si
-# alguien la mueve o la quita, el resalte desaparecería sin avisar.
-for name, keys in layers:
-    if name in MARKS:
-        for k in MARKS[name][0]:
-            n = keys.count(k)
-            if n != 1:
-                sys.exit(f"{name}: la tecla de referencia {k} aparece {n} veces")
+def is_left(idx):
+    return idx % 12 < 6 if idx < 48 else idx < 50
+
+
+# Cada capa de MARKS tiene que existir, y cada tecla de referencia (izquierda,
+# derecha) aparecer una sola vez y en su mano. Si no, el resalte se perdería o
+# se iría de lado sin avisar.
+layer_keys = dict(layers)
+for name, (marks, _, _) in MARKS.items():
+    if name not in layer_keys:
+        sys.exit(f"{name}: la capa de MARKS no existe en keymap.c")
+    keys = layer_keys[name]
+    for k, left in zip(marks, (True, False)):
+        n = keys.count(k)
+        if n != 1:
+            sys.exit(f"{name}: la tecla de referencia {k} aparece {n} veces")
+        if is_left(keys.index(k)) != left:
+            sys.exit(f"{name}: la tecla de referencia {k} no está en la mano esperada")
 
 
 out = []
 out.append("// GENERADO por gen_ledmap.py. No editar a mano.")
-out.append("// Cada capa ilumina solo las teclas que hace algo. En la capa BASE el")
+out.append("// Cada capa ilumina solo las teclas que hacen algo. En la capa BASE el")
 out.append("// campo de tono se SUMA a base_hue(), que depende del host detectado.")
 out.append("//")
 out.append("// Las entradas van en orden de INDICE DE LED, que no es el de")
