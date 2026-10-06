@@ -138,15 +138,8 @@ podido determinarlo. Las dos teclas modificadoras salen con un tono desplazado.
 ```
 
 **META se enciende cuando NAV y SYM están activas a la vez.** No consume
-ninguna tecla: es un tri-layer. Con `TAPPING_TOGGLE 1` hay dos formas de
-llegar:
-
-- mantener los dos pulgares interiores, y soltar al terminar;
-- tocar NAV, tocar SYM, y quedarte ahí.
-
-La segunda deja las tres capas fijadas. Para salir hay que apagar las dos:
-tocar NAV la quita y META se apaga con ella, pero SYM sigue activa hasta que
-la toques también.
+ninguna tecla: es un tri-layer. Se llega manteniendo los dos pulgares
+interiores y se sale al soltar cualquiera de los dos.
 
 Mano izquierda de META: mover ventanas entre pantallas, forzar el sistema
 detectado, LEDs, y `FLASH` para entrar en modo bootloader.
@@ -173,7 +166,7 @@ Mano derecha: Herdr, con el foco de panel sobre las teclas h j k l reales.
 | `¡ ¿ ' ?` en la izquierda de SYM | `' ¡` en la derecha; `¿ ?` en la fila 1 izquierda, sin Shift | `?` y `¿` son demasiado frecuentes para Sym + Shift + tecla |
 | La chuleta no decía de dónde sale `! " $ % & ( ) =` | línea `⇧` bajo cada tecla | al vaciar SYM tenían que verse en alguna parte |
 | Fila 4 derecha de SYM vacía | `^ ¨ ; : ç` | `¨` hace falta para ü |
-| `TAPPING_TOGGLE` 5 (por defecto) | 1 | un toque fija la capa, otro la quita; mantener sigue dando momentánea |
+| `TT()` en los pulgares de capa | `MO()` | la capa solo está activa mientras mantienes la tecla; un toque no la fija |
 | LEDs uniformes por capa | base según el host; NAV, SYM y META planas con dos teclas de referencia en otro color | se sabe en qué capa estás y dónde poner los dedos |
 | 3 capas | 4, la nueva por tri-layer | Herdr y control del sistema |
 
@@ -470,10 +463,9 @@ teclas de índice (b, y, f, j); añadir modificadores a la fila de inicio ahora
 empeoraría eso. El cluster de modificadores de la capa NAV cubre el caso sin
 tocar la capa base.
 
-**Un roce del pulgar fija la capa.** Es la contrapartida de
-`TAPPING_TOGGLE 1`. El color de los LEDs cambia con la capa, así que lo ves,
-pero si te pasa a menudo cambia el 1 por un 2 en `config.h`: entonces hace
-falta doble toque para fijar y un roce suelto no hace nada.
+**Las capas no se fijan.** Con `TT()` un toque suelto dejaba la capa activa,
+y un toque mal medido acababa escribiendo con los caracteres de la capa. Ahora
+los pulgares son `MO()`: la capa existe mientras la mantienes y nada más.
 
 **No hay teclado numérico.** La mano derecha de SYM podría ser uno, con los
 operadores ya colocados al lado. Lo dejé fuera porque implica reaprender la capa

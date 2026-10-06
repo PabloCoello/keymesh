@@ -64,7 +64,7 @@ enum {
 #define LGUI(kc) (0x0800 | (kc))
 #define S(kc)    LSFT(kc)
 #define ALGR(kc) (0x1400 | (kc))
-#define TT(n)    (0x5200 | (n))
+#define MO(n)    (0x5220 | (n))
 
 typedef enum { OS_UNSURE, OS_LINUX, OS_WINDOWS, OS_MACOS, OS_IOS } os_variant_t;
 os_variant_t detected_host_os(void);

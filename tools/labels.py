@@ -6,7 +6,7 @@ LAYER_TITLES = {
     "L_BASE": ("Base", "Letras, dígitos y los dos modificadores"),
     "L_NAV": ("Nav", "Pulgar izquierdo interior"),
     "L_SYM": ("Sym", "Pulgar derecho interior"),
-    "L_META": ("Meta", "Toca Nav y luego Sym, o mantén los dos"),
+    "L_META": ("Meta", "Mantén Nav y Sym a la vez"),
 }
 
 LABELS = {
@@ -44,7 +44,7 @@ LABELS = {
     "RM_HUED": "Tono −", "RM_VALU": "Brillo +", "RM_VALD": "Brillo −",
     "RGB_SLD": "LED fijo", "TOGGLE_LAYER_COLOR": "LED capa",
     "QK_BOOT": "FLASH", "EE_CLR": "Borra EE",
-    "TT(L_NAV)": "Nav", "TT(L_SYM)": "Sym",
+    "MO(L_NAV)": "Nav", "MO(L_SYM)": "Sym",
 }
 
 CHORDS = {
@@ -92,10 +92,7 @@ HERDR = {
 
 
 # Sub-etiquetas fijas, para teclas cuyo comportamiento no se ve en el nombre.
-SUBS = {
-    "TT(L_NAV)": "toque fija",
-    "TT(L_SYM)": "toque fija",
-}
+SUBS = {}
 
 # Lo que escribe cada tecla al pulsarla con Shift, para las que producen un
 # símbolo distinto y no solo la mayúscula. Es la mitad del layout que no se ve
